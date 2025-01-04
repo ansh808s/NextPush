@@ -27,7 +27,7 @@ const uploadFiles = async () => {
         console.log('Uploading', filePath)
         const command = new PutObjectCommand({
             Bucket: process.env.S3_BUCKET,
-            Key: `__outputs/${PROJECT_ID}/${filePath}`,
+            Key: `__outputs/${PROJECT_ID}/${file}`,
             Body: fs.createReadStream(filePath),
             ContentType: mime.lookup(filePath)
         })
@@ -49,7 +49,9 @@ const init = async () => {
     p.stdout.on('error', (data) => {
         console.log(data.toString())
     })
-    p.on('close', uploadFiles())
+    p.on('close', (code) => {
+        uploadFiles();
+    });
 }
 
 init()
