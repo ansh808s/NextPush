@@ -28,7 +28,7 @@ export const signin: RequestHandler = async (req, res) => {
       res.status(404).json({ msg: "User not found" });
       return;
     }
-    const user = prisma.user.upsert({
+    const user = await prisma.user.upsert({
       where: {
         username: userGithub.username,
       },
@@ -48,6 +48,7 @@ export const signin: RequestHandler = async (req, res) => {
     const jwtToken = jwt.sign(
       {
         username: userGithub.username,
+        id: user.id,
       },
       process.env.JWT_SECRET || ""
     );
