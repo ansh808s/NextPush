@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { User } from "../../types/auth.types";
 
 export const getUserDetails = async (token: string) => {
   try {
@@ -7,6 +8,11 @@ export const getUserDetails = async (token: string) => {
         Authorization: `Bearer ${token}`,
       },
     });
-    return res.data;
+    const user: User = {
+      username: res.data.login,
+      avatarUrl: res.data.avatar_url,
+      email: res.data.email,
+    };
+    return user;
   } catch (error) {}
 };
