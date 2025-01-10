@@ -1,9 +1,9 @@
 import type { RequestHandler } from "express";
-import prisma from "../../prisma/db";
-import { createUserSchema } from "../validations/auth/validation";
-import { getAccessToken } from "../services/github/auth";
-import { getUserDetails } from "../services/github/resource";
-import { encrypt } from "../utils/encryption";
+import prisma from "../../../prisma/db";
+import { createUserSchema } from "../../validations/auth/validation";
+import { getAccessToken } from "../../services/github/auth";
+import { getUserDetails } from "../../services/github/resource";
+import { encrypt } from "../../utils/encryption";
 import jwt from "jsonwebtoken";
 
 export const signin: RequestHandler = async (req, res) => {
