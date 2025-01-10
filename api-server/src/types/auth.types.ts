@@ -3,3 +3,7 @@ export interface User {
   email?: string;
   avatarUrl?: string;
 }
+export interface AuthToken {
+  id: string;
+  username: string;
+}

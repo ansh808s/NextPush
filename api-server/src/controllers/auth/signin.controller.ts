@@ -5,6 +5,7 @@ import { getAccessToken } from "../../services/github/auth";
 import { getUserDetails } from "../../services/github/resource";
 import { encrypt } from "../../utils/encryption";
 import jwt from "jsonwebtoken";
+import type { AuthToken } from "../../types/auth.types";
 
 export const signin: RequestHandler = async (req, res) => {
   const parsedData = createUserSchema.safeParse(req.body);
@@ -45,13 +46,11 @@ export const signin: RequestHandler = async (req, res) => {
         accessToken: encrypt(token),
       },
     });
-    const jwtToken = jwt.sign(
-      {
-        username: userGithub.username,
-        id: user.id,
-      },
-      process.env.JWT_SECRET || ""
-    );
+    const jwtPayLoad: AuthToken = {
+      username: userGithub.username,
+      id: user.id,
+    };
+    const jwtToken = jwt.sign(jwtPayLoad, process.env.JWT_SECRET || "");
 
     res.status(200).json({ token: jwtToken });
     return;
