@@ -14,18 +14,21 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(uuid())
-  username    String   @unique
-  email       String?  @unique
-  avatarUrl   String?
-  accessToken String
-  createdAt   DateTime @default(now())
+  id          String    @id @default(uuid())
+  username    String    @unique
+  email       String?   @unique
+  avatarUrl   String?   @map("avatar_url")
+  accessToken String    @map("access_token")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  Project     Project[]
 }
 
 model Project {
   id        String   @id @default(uuid())
   name      String   @unique
-  createdAt DateTime @default(now())
-  gitURL    String
-  subDomain String
+  createdAt DateTime @default(now()) @map("created_at")
+  gitURL    String   @map("git_url")
+  subDomain String   @map("sub_domain")
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id])
 }
