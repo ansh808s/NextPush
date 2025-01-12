@@ -13,6 +13,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum DeploymentStatus {
+  NOT_STARTED
+  QUEUED
+  IN_PROGRESS
+  READY
+  FAILED
+}
+
 model User {
   id          String    @id @default(uuid())
   username    String    @unique
@@ -24,11 +32,20 @@ model User {
 }
 
 model Project {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  createdAt DateTime @default(now()) @map("created_at")
-  gitURL    String   @map("git_url")
-  subDomain String   @map("sub_domain")
-  userId    String   @map("user_id")
-  user      User     @relation(fields: [userId], references: [id])
+  id         String       @id @default(uuid())
+  name       String       @unique
+  createdAt  DateTime     @default(now()) @map("created_at")
+  gitURL     String       @map("git_url")
+  subDomain  String       @map("sub_domain")
+  userId     String       @map("user_id")
+  user       User         @relation(fields: [userId], references: [id])
+  Deployment Deployment[]
+}
+
+model Deployment {
+  id        String           @id @default(uuid())
+  projectId String           @map("project_id")
+  project   Project          @relation(fields: [projectId], references: [id])
+  status    DeploymentStatus @default(NOT_STARTED)
+  createdAt DateTime         @default(now()) @map("created_at")
 }
