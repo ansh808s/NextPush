@@ -9,6 +9,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@aws-sdk/client-ecs": "^3.731.1",
     "@prisma/client": "6.1.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
