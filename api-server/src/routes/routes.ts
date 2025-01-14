@@ -4,4 +4,4 @@ import appRouter from "./app.routes";
 export const router = express.Router();
 
 router.use("/auth", authRouter);
-router.use("/auth", appRouter);
+router.use("/app", appRouter);
