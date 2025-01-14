@@ -1,0 +1,51 @@
+import type { RequestHandler } from "express";
+import prisma from "../../../prisma/db";
+import { createDeploymentSchema } from "../../validations/app/validatons";
+import { deployTask } from "../../services/AWS/deployTask";
+
+export const cerateDeployment: RequestHandler = async (req, res) => {
+  const userId = req.userId;
+  const parsedData = createDeploymentSchema.safeParse(req.body);
+  if (!parsedData.success) {
+    res.status(400).json({
+      message: "Invalid inputs",
+      error: parsedData.error.format(),
+    });
+    return;
+  }
+  const data = parsedData.data;
+
+  try {
+    const project = await prisma.project.findFirst({
+      where: {
+        id: data.projectId,
+        userId: userId,
+      },
+    });
+    if (!project) {
+      res.status(403).json({
+        message: "You do not own this project or it does not exist.",
+      });
+      return;
+    }
+
+    const deployment = await prisma.deployment.create({
+      data: {
+        projectId: data.projectId,
+        status: "QUEUED",
+      },
+    });
+
+    await deployTask({
+      deploymentId: deployment.id,
+      gitURL: project.gitURL,
+      projectId: data.projectId,
+    });
+
+    res.status(200).json({ status: "queued", deploymentId: deployment.id });
+    return;
+  } catch (error) {
+    res.status(500).json({ msg: "Something went wrong" });
+    return;
+  }
+};
