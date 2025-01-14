@@ -11,7 +11,7 @@ export const authMiddleware: RequestHandler = (req, res, next) => {
   try {
     const tokenDecoded = jwt.verify(
       token,
-      process.env.JWTSECRET || ""
+      process.env.JWT_SECRET || ""
     ) as AuthToken;
     req.userId = tokenDecoded.id;
     next();
