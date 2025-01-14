@@ -3,7 +3,7 @@ import prisma from "../../../prisma/db";
 import { createDeploymentSchema } from "../../validations/app/validatons";
 import { deployTask } from "../../services/AWS/deployTask";
 
-export const cerateDeployment: RequestHandler = async (req, res) => {
+export const createDeployment: RequestHandler = async (req, res) => {
   const userId = req.userId;
   const parsedData = createDeploymentSchema.safeParse(req.body);
   if (!parsedData.success) {
@@ -39,10 +39,14 @@ export const cerateDeployment: RequestHandler = async (req, res) => {
     await deployTask({
       deploymentId: deployment.id,
       gitURL: project.gitURL,
-      projectId: data.projectId,
+      projectId: project.name + project.subDomain,
     });
 
-    res.status(200).json({ status: "queued", deploymentId: deployment.id });
+    res.status(200).json({
+      status: "queued",
+      deploymentId: deployment.id,
+      url: `http://${project.name}-${project.subDomain}.localhost:8000`,
+    });
     return;
   } catch (error) {
     res.status(500).json({ msg: "Something went wrong" });
