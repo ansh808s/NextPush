@@ -17,7 +17,7 @@ export const createProject: RequestHandler = async (req, res) => {
     const project = await prisma.project.create({
       data: {
         gitURL: data.gitURL,
-        name: data.name,
+        name: data.name.trim().replace(/\s+/g, "-"),
         userId: req.userId,
         subDomain: generateSlug(),
       },
@@ -31,6 +31,8 @@ export const createProject: RequestHandler = async (req, res) => {
       project: project.id,
       subDomain: project.subDomain,
       name: project.name,
+      slug: `${project.name}-${project.subDomain}`,
+      url: `http://${project.name}-${project.subDomain}.localhost:8000`,
     });
     return;
   } catch (error) {
