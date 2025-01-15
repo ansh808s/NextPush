@@ -39,7 +39,7 @@ export const createDeployment: RequestHandler = async (req, res) => {
     await deployTask({
       deploymentId: deployment.id,
       gitURL: project.gitURL,
-      projectId: project.name + project.subDomain,
+      projectId: `${project.name}-${project.subDomain}`,
     });
 
     res.status(200).json({
