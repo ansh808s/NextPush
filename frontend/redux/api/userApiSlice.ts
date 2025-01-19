@@ -1,11 +1,11 @@
-import { AuthResponse, AuthToken } from "@/types/auth/types";
+import { AuthResponse, AuthCode } from "@/types/auth/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const userApiSlice = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({ baseUrl: `${process.env.NEXT_PUBLIC_API_URL}` }),
   endpoints: (builder) => ({
-    createUser: builder.mutation<AuthResponse, AuthToken>({
+    createUser: builder.mutation<AuthResponse, AuthCode>({
       query: (code) => ({
         url: "/auth/signin",
         method: "POST",

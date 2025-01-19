@@ -1,5 +1,5 @@
-export type AuthToken = {
-  token: string;
+export type AuthCode = {
+  code: string;
 };
 
 export type User = {
@@ -8,6 +8,6 @@ export type User = {
   email: string;
 };
 
-export interface AuthResponse extends AuthToken {
+export interface AuthResponse extends AuthCode {
   data: User;
 }
