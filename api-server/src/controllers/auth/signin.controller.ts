@@ -52,7 +52,14 @@ export const signin: RequestHandler = async (req, res) => {
     };
     const jwtToken = jwt.sign(jwtPayLoad, process.env.JWT_SECRET || "");
 
-    res.status(200).json({ token: jwtToken });
+    res.status(200).json({
+      token: jwtToken,
+      data: {
+        username: user.username,
+        avatar: user.avatarUrl,
+        email: user.email,
+      },
+    });
     return;
   } catch (error) {
     res.status(500).json({ msg: "Something went wrong" });
