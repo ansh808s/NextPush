@@ -8,6 +8,7 @@ export type User = {
   email: string;
 };
 
-export interface AuthResponse extends AuthCode {
+export interface AuthResponse {
+  token: string;
   data: User;
 }
