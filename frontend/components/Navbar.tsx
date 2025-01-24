@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ModeToggle";
+import LoginButton from "./LoginButton";
 
 export default function Navbar() {
   return (
@@ -22,7 +22,7 @@ export default function Navbar() {
             </li>
 
             <li>
-              <Button variant="outline">Log in</Button>
+              <LoginButton />
             </li>
             <li>
               <ModeToggle />
