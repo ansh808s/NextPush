@@ -14,7 +14,9 @@ export const getUserDetails = async (token: string) => {
       email: res.data.email,
     };
     return user;
-  } catch (error) {}
+  } catch (error) {
+    throw new Error("Cant get user details");
+  }
 };
 
 export const getUserRepoDetails = async (token: string) => {
