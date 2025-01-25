@@ -26,3 +26,7 @@ export interface GitHubSearch {
   query: string;
   user: string;
 }
+
+export interface GithubRepoQueryRes {
+  items: GithubRepoRes[];
+}
