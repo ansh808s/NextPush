@@ -13,3 +13,9 @@ export interface Repository {
   name: string;
   updatedAt: Date;
 }
+
+export interface GithubRepoRes {
+  clone_url: string;
+  name: string;
+  updated_at: Date;
+}
