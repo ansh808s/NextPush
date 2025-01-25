@@ -21,3 +21,8 @@ export interface GithubRepoRes {
   updated_at: Date;
   description: string | null;
 }
+
+export interface GitHubSearch {
+  query: string;
+  user: string;
+}
