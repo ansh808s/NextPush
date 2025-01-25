@@ -1,5 +1,11 @@
 import axios from "axios";
-import type { GithubRepoRes, Repository, User } from "../../types/auth.types";
+import type {
+  GithubRepoQueryRes,
+  GithubRepoRes,
+  GitHubSearch,
+  Repository,
+  User,
+} from "../../types/auth.types";
 
 export const getUserDetails = async (token: string) => {
   try {
@@ -38,5 +44,24 @@ export const getUserRepoDetails = async (token: string) => {
     return repos;
   } catch (error) {
     throw new Error("Cant get repo details");
+  }
+};
+
+export const getRepoDetailsUsingQuery = async (props: GitHubSearch) => {
+  try {
+    const res = await axios.get<GithubRepoQueryRes>(
+      `https://api.github.com/search/repositories?q=${encodeURIComponent(
+        `${props.query} in:name user:${props.user}`
+      )}`
+    );
+    const repos: Repository[] = res.data.items.map((repo) => ({
+      gitURL: repo.clone_url,
+      name: repo.name,
+      updatedAt: repo.updated_at,
+      description: repo.description,
+    }));
+    return repos;
+  } catch (error) {
+    console.log(error);
   }
 };
