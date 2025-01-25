@@ -12,10 +12,12 @@ export interface Repository {
   gitURL: string;
   name: string;
   updatedAt: Date;
+  description: string | null;
 }
 
 export interface GithubRepoRes {
   clone_url: string;
   name: string;
   updated_at: Date;
+  description: string | null;
 }
