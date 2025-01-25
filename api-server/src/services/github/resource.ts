@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { User } from "../../types/auth.types";
+import type { GithubRepoRes, Repository, User } from "../../types/auth.types";
 
 export const getUserDetails = async (token: string) => {
   try {
@@ -15,4 +15,25 @@ export const getUserDetails = async (token: string) => {
     };
     return user;
   } catch (error) {}
+};
+
+export const getUserRepoDetails = async (token: string) => {
+  try {
+    const res = await axios.get<GithubRepoRes[]>(
+      "https://api.github.com/users/ansh808s/repos?sort=updated&per_page=5",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const repos: Repository[] = res.data.map((repo) => ({
+      gitURL: repo.clone_url,
+      name: repo.name,
+      updatedAt: repo.updated_at,
+    }));
+    return repos;
+  } catch (error) {
+    throw new Error("Cant get repo details");
+  }
 };
