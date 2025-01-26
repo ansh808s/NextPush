@@ -12,3 +12,14 @@ export interface AuthResponse {
   token: string;
   data: User;
 }
+
+export interface Repository {
+  gitURL: string;
+  name: string;
+  updatedAt: Date;
+  description: string;
+}
+
+export interface RepoResponse {
+  repos: Repository[];
+}
