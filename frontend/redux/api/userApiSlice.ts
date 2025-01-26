@@ -12,12 +12,15 @@ export const userApiSlice = createApi({
         body: code,
       }),
     }),
-    getRepo: builder.query<RepoResponse, void>({
-      query: () => ({
+    getRepo: builder.query<RepoResponse, { query: string } | null>({
+      query: (args) => ({
         url: "/auth/repo",
         method: "GET",
         headers: {
           Authorization: localStorage.getItem("token")!,
+        },
+        params: {
+          query: args?.query || "",
         },
       }),
     }),
