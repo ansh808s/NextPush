@@ -14,11 +14,15 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight, Search } from "lucide-react";
 import { useGetRepoQuery } from "@/redux/api/userApiSlice";
 import { Repository } from "@/types/auth/types";
+import useDebounce from "@/hooks/useDebounce";
 
 export default function SelectRepo() {
-  const { data, error, isLoading } = useGetRepoQuery();
   const [search, setSearch] = useState<string>("");
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
+  const debouncedSearch = useDebounce(search, 400);
+  const { data, error, isLoading } = useGetRepoQuery({
+    query: debouncedSearch,
+  });
   const router = useRouter();
 
   const handleSelectRepo = (repo: Repository) => {
