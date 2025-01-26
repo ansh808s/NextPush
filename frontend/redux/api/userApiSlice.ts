@@ -1,4 +1,4 @@
-import { AuthResponse, AuthCode } from "@/types/auth/types";
+import { AuthResponse, AuthCode, RepoResponse } from "@/types/auth/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const userApiSlice = createApi({
@@ -12,7 +12,16 @@ export const userApiSlice = createApi({
         body: code,
       }),
     }),
+    getRepo: builder.query<RepoResponse, void>({
+      query: () => ({
+        url: "/auth/repo",
+        method: "GET",
+        headers: {
+          Authorization: localStorage.getItem("token")!,
+        },
+      }),
+    }),
   }),
 });
 
-export const { useCreateUserMutation } = userApiSlice;
+export const { useCreateUserMutation, useGetRepoQuery } = userApiSlice;
