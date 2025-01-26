@@ -33,6 +33,7 @@ export const getUserRepoDetails = async (token: string) => {
       gitURL: repo.clone_url,
       name: repo.name,
       updatedAt: repo.updated_at,
+      description: repo.description,
     }));
     return repos;
   } catch (error) {
