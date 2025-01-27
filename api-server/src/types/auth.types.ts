@@ -35,5 +35,17 @@ export interface GetRepoTreeProps {
   user: string;
   repo: string;
   sha: string;
-  token: string;
+}
+export enum FileType {
+  dir = "tree",
+  file = "blob",
+}
+export interface GithubRepoTree {
+  path: string;
+  type: FileType;
+  sha: string;
+}
+export interface GetRepoTreeResponse {
+  sha: string;
+  tree: GithubRepoTree[];
 }
