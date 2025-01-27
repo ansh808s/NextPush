@@ -15,6 +15,7 @@ import { ArrowRight, Search } from "lucide-react";
 import { useGetRepoQuery } from "@/redux/api/userApiSlice";
 import { Repository } from "@/types/auth/types";
 import useDebounce from "@/hooks/useDebounce";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SelectRepo() {
   const [search, setSearch] = useState<string>("");
@@ -62,33 +63,45 @@ export default function SelectRepo() {
             />
           </div>
           <div className="space-y-4">
-            {data?.repos.map((repo) => (
-              <Card
-                key={repo.gitURL}
-                className={`transition-all duration-300 hover:shadow-md cursor-pointer ${
-                  selectedRepo?.gitURL === repo.gitURL
-                    ? "border-rose-500 shadow-md"
-                    : "border-gray-200 dark:border-gray-700"
-                }`}
-                onClick={() => handleSelectRepo(repo)}
-              >
-                <CardContent className="flex items-center justify-between p-4">
-                  <div>
-                    <h3 className="text-lg font-semibold">{repo.name}</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {repo.description}
-                    </p>
-                  </div>
-                  <ArrowRight
-                    className={`w-6 h-6 transition-opacity ${
-                      selectedRepo?.gitURL === repo.gitURL
-                        ? "opacity-100 text-rose-500"
-                        : "opacity-0"
-                    }`}
-                  />
-                </CardContent>
-              </Card>
-            ))}
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <Skeleton key={index} className="w-full h-28 " />
+              ))
+            ) : data?.repos.length == 0 ? (
+              <>
+                <div className="pt-5 pb-2 flex justify-center items-center">
+                  <p className="text-white">No repository found!</p>
+                </div>
+              </>
+            ) : (
+              data?.repos.map((repo) => (
+                <Card
+                  key={repo.gitURL}
+                  className={`transition-all duration-300 hover:shadow-md cursor-pointer ${
+                    selectedRepo?.gitURL === repo.gitURL
+                      ? "border-rose-500 shadow-md"
+                      : "border-gray-200 dark:border-gray-700"
+                  }`}
+                  onClick={() => handleSelectRepo(repo)}
+                >
+                  <CardContent className="flex items-center justify-between p-4">
+                    <div>
+                      <h3 className="text-lg font-semibold">{repo.name}</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {repo.description}
+                      </p>
+                    </div>
+                    <ArrowRight
+                      className={`w-6 h-6 transition-opacity ${
+                        selectedRepo?.gitURL === repo.gitURL
+                          ? "opacity-100 text-rose-500"
+                          : "opacity-0"
+                      }`}
+                    />
+                  </CardContent>
+                </Card>
+              ))
+            )}
           </div>
           <div className="mt-6 flex justify-end">
             <Button
