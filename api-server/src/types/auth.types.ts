@@ -30,3 +30,10 @@ export interface GitHubSearch {
 export interface GithubRepoQueryRes {
   items: GithubRepoRes[];
 }
+
+export interface GetRepoTreeProps {
+  user: string;
+  repo: string;
+  sha: string;
+  token: string;
+}
