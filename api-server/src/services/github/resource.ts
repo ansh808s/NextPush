@@ -1,10 +1,13 @@
 import axios from "axios";
-import type {
-  GithubRepoQueryRes,
-  GithubRepoRes,
-  GitHubSearch,
-  Repository,
-  User,
+import {
+  FileType,
+  type GetRepoTreeProps,
+  type GetRepoTreeResponse,
+  type GithubRepoQueryRes,
+  type GithubRepoRes,
+  type GitHubSearch,
+  type Repository,
+  type User,
 } from "../../types/auth.types";
 
 export const getUserDetails = async (token: string) => {
@@ -63,5 +66,18 @@ export const getRepoDetailsUsingQuery = async (props: GitHubSearch) => {
     return repos;
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const getRepoTreeService = async (props: GetRepoTreeProps) => {
+  try {
+    const res = await axios.get<GetRepoTreeResponse>(
+      `https://api.github.com/repos/${props.user}/${props.repo}/git/trees/${props.sha}`
+    );
+    return res.data.tree
+      .filter((file) => file.type === FileType.dir)
+      .map(({ path, type, sha }) => ({ path, type, sha }));
+  } catch (error) {
+    throw new Error("Cant get repo tree");
   }
 };
