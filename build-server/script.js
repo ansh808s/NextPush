@@ -40,8 +40,17 @@ const uploadFiles = async () => {
 const init = async () => {
     console.log("Executing script.js")
     const outDirPath = path.join(__dirname, 'output')
-    const p = exec(`cd ${outDirPath} && npm install && npm run build`)
-
+    if (process.env.ROOT_DIR && (!process.env.ROOT_DIR.trim() === "")) {
+        const paths = process.env.ROOT_DIR.split('/').filter((path) => path != "")
+        outDirPath.join(__dirname, ...paths)
+    }
+    let p
+    if (process.env.FRAMEWORK == 'react') {
+        p = exec(`cd ${outDirPath} && npm install && npm run build`)
+    }
+    if (process.env.FRAMEWORK == 'vanilla') {
+        p = exec(`cd ${outDirPath} && npm install`)
+    }
     p.stdout.on('data', (data) => {
         console.log(data.toString())
     })
