@@ -23,3 +23,12 @@ export interface Repository {
 export interface RepoResponse {
   repos: Repository[];
 }
+
+export interface Tree {
+  path: string;
+  type: string;
+  sha: string;
+}
+export interface GetRepoTreeResponse {
+  tree: Tree[];
+}
