@@ -1,4 +1,4 @@
-export const supportedFrameworks = [
-  { label: "React", value: "react" },
-  { label: "Vanilla Javascript", value: "vanilla" },
-];
+export enum SupportedFrameworks {
+  React = "react",
+  VanillaJS = "vanilla",
+}
