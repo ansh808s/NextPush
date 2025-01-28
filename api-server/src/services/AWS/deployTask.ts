@@ -1,10 +1,13 @@
 import { RunTaskCommand } from "@aws-sdk/client-ecs";
 import { ecsClient } from "../../../config/aws/ecsClient";
+import type { SupportedFrameworks } from "../../config/constants";
 
 interface IDeployTask {
   gitURL: string;
   projectId: string;
   deploymentId: string;
+  framework: `${SupportedFrameworks}`;
+  rootDir: string;
 }
 
 export const deployTask = async (props: IDeployTask) => {
@@ -33,6 +36,14 @@ export const deployTask = async (props: IDeployTask) => {
             {
               name: "S3_SECRET_ACCESS_KEY",
               value: process.env.S3_SECRET_ACCESS_KEY,
+            },
+            {
+              name: "FRAMEWORK",
+              value: props.framework,
+            },
+            {
+              name: "ROOT_DIR",
+              value: props.rootDir,
             },
           ],
         },
