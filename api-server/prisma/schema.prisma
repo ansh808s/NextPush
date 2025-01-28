@@ -39,6 +39,8 @@ model Project {
   subDomain  String       @map("sub_domain")
   userId     String       @map("user_id")
   user       User         @relation(fields: [userId], references: [id])
+  rootDir    String       @map("root_dir")
+  framework  String
   Deployment Deployment[]
 }
 
