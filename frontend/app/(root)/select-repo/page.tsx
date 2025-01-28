@@ -1,5 +1,5 @@
 "use client";
-
+//TODO:Handle failure to fetch inital repo
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -36,7 +36,7 @@ export default function SelectRepo() {
 
   const handleContinue = () => {
     if (selectedRepo) {
-      router.push("/setup-project");
+      router.push(`/setup-project?repo=${selectedRepo.name}`);
     }
   };
 
