@@ -1,4 +1,10 @@
-import { AuthResponse, AuthCode, RepoResponse } from "@/types/auth/types";
+import {
+  AuthResponse,
+  AuthCode,
+  RepoResponse,
+  GetRepoTreeResponse,
+  GetRepoTreeProps,
+} from "@/types/auth/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const userApiSlice = createApi({
@@ -24,7 +30,18 @@ export const userApiSlice = createApi({
         },
       }),
     }),
+    getTree: builder.mutation<GetRepoTreeResponse, GetRepoTreeProps>({
+      query: (info) => ({
+        url: "/auth/tree",
+        method: "POST",
+        headers: {
+          Authorization: localStorage.getItem("token")!,
+        },
+        body: info,
+      }),
+    }),
   }),
 });
 
-export const { useCreateUserMutation, useGetRepoQuery } = userApiSlice;
+export const { useCreateUserMutation, useGetRepoQuery, useGetTreeMutation } =
+  userApiSlice;
