@@ -10,6 +10,7 @@ export const formSchema = z.object({
       })
     )
     .optional(),
+  rootDir: z.string(),
 });
 
-export type FormData = z.infer<typeof formSchema>;
+export type SetupProjectFormData = z.infer<typeof formSchema>;
