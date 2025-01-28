@@ -32,3 +32,8 @@ export interface Tree {
 export interface GetRepoTreeResponse {
   tree: Tree[];
 }
+
+export interface GetRepoTreeProps {
+  sha: string;
+  repo: string;
+}
