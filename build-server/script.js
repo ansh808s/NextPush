@@ -14,9 +14,9 @@ const s3Client = new S3Client({
 })
 
 
-const uploadFiles = async () => {
+const uploadFiles = async (paths) => {
     console.log('Build Complete')
-    const distDirPath = path.join(__dirname, 'output', 'dist')
+    const distDirPath = path.join(__dirname, 'output', ...paths, 'dist')
     const distContent = fs.readdirSync(distDirPath, { recursive: true })
     console.log('Starting Upload')
     for (const file of distContent) {
@@ -39,11 +39,17 @@ const uploadFiles = async () => {
 
 const init = async () => {
     console.log("Executing script.js")
-    const outDirPath = path.join(__dirname, 'output')
-    if (process.env.ROOT_DIR && (!process.env.ROOT_DIR.trim() === "")) {
-        const paths = process.env.ROOT_DIR.split('/').filter((path) => path != "")
-        outDirPath.join(__dirname, ...paths)
+    let outDirPath
+    let paths
+    if (process.env.ROOT_DIR) {
+        paths = process.env.ROOT_DIR.split('/').filter((path) => path != "")
+        outDirPath = path.join(__dirname, "output", ...paths)
     }
+    else {
+        outDirPath = path.join(__dirname, "output")
+        paths = []
+    }
+    console.log(outDirPath)
     let p
     if (process.env.FRAMEWORK == 'react') {
         p = exec(`cd ${outDirPath} && npm install && npm run build`)
@@ -59,7 +65,7 @@ const init = async () => {
         console.log(data.toString())
     })
     p.on('close', (code) => {
-        uploadFiles();
+        uploadFiles(paths);
     });
 }
 
