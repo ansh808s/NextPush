@@ -20,22 +20,22 @@ export const createProject: RequestHandler = async (req, res) => {
         name: data.name.trim().replace(/\s+/g, "-"),
         userId: req.userId,
         subDomain: generateSlug(),
-      },
-      select: {
-        id: true,
-        subDomain: true,
-        name: true,
+        framework: data.framework,
+        rootDir: data.rootDir,
       },
     });
     res.status(200).json({
       project: project.id,
       subDomain: project.subDomain,
       name: project.name,
+      framework: data.framework,
+      rootDir: data.rootDir,
       slug: `${project.name}-${project.subDomain}`,
       url: `http://${project.name}-${project.subDomain}.localhost:8000`,
     });
     return;
   } catch (error) {
+    console.log(error);
     res.status(500).json({ msg: "Something went wrong" });
     return;
   }
