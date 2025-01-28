@@ -2,6 +2,7 @@ import type { RequestHandler } from "express";
 import prisma from "../../../prisma/db";
 import { createDeploymentSchema } from "../../validations/app/validatons";
 import { deployTask } from "../../services/AWS/deployTask";
+import type { SupportedFrameworks } from "../../config/constants";
 
 export const createDeployment: RequestHandler = async (req, res) => {
   const userId = req.userId;
@@ -40,6 +41,8 @@ export const createDeployment: RequestHandler = async (req, res) => {
       deploymentId: deployment.id,
       gitURL: project.gitURL,
       projectId: `${project.name}-${project.subDomain}`,
+      framework: project.framework as `${SupportedFrameworks}`,
+      rootDir: project.rootDir,
     });
 
     res.status(200).json({
