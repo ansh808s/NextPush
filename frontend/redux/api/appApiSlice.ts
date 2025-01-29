@@ -1,4 +1,8 @@
-import { CreateProjectProps, CreateProjectResponse } from "@/types/app/types";
+import {
+  CreateDeploymentResponse,
+  CreateProjectProps,
+  CreateProjectResponse,
+} from "@/types/app/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const appApiSLice = createApi({
@@ -15,7 +19,21 @@ export const appApiSLice = createApi({
         body: info,
       }),
     }),
+    createDeployment: builder.mutation<
+      CreateDeploymentResponse,
+      CreateProjectProps
+    >({
+      query: (info) => ({
+        url: "/app/deploy",
+        method: "POST",
+        headers: {
+          Authorization: localStorage.getItem("token")!,
+        },
+        body: info,
+      }),
+    }),
   }),
 });
 
-export const { useCreateProjectMutation } = appApiSLice;
+export const { useCreateProjectMutation, useCreateDeploymentMutation } =
+  appApiSLice;
