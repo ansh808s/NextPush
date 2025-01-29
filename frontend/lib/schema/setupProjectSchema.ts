@@ -1,7 +1,8 @@
+import { SupportedFrameworks } from "@/config/constant";
 import { z } from "zod";
 export const formSchema = z.object({
-  projectName: z.string().min(1, "Project Name is required"),
-  framework: z.string().min(1, "Please select a framework"),
+  name: z.string().min(1, "Project Name is required"),
+  framework: z.nativeEnum(SupportedFrameworks),
   envVars: z
     .array(
       z.object({
