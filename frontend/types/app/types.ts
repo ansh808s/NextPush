@@ -6,3 +6,13 @@ export interface CreateProjectProps {
   framework: `${SupportedFrameworks}`;
   rootDir: string;
 }
+
+export interface CreateProjectResponse {
+  project: string;
+  name: string;
+  framework: `${SupportedFrameworks}`;
+  rootDir: string;
+  subDomain: string;
+  slug: string;
+  url: string;
+}
