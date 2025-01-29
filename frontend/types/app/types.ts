@@ -20,3 +20,16 @@ export interface CreateProjectResponse {
 export interface CreateDeploymentProps {
   projectId: string;
 }
+
+export enum DeploymentStatus {
+  NotStarted = "not started",
+  Queued = "queued",
+  InProgress = "in progress",
+  Ready = "ready",
+  Failed = "failed",
+}
+export interface CreateDeploymentResponse {
+  url: string;
+  deploymentId: string;
+  status: DeploymentStatus;
+}
