@@ -16,3 +16,7 @@ export interface CreateProjectResponse {
   slug: string;
   url: string;
 }
+
+export interface CreateDeploymentProps {
+  projectId: string;
+}
