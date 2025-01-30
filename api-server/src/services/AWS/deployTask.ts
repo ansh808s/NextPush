@@ -1,5 +1,5 @@
 import { RunTaskCommand } from "@aws-sdk/client-ecs";
-import { ecsClient } from "../../../config/aws/ecsClient";
+import { ecsClient } from "../../config/aws/ecsClient";
 import type { SupportedFrameworks } from "../../config/constants";
 
 interface IDeployTask {
