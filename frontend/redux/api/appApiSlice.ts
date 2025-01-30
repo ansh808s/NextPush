@@ -1,4 +1,5 @@
 import {
+  CreateDeploymentProps,
   CreateDeploymentResponse,
   CreateProjectProps,
   CreateProjectResponse,
@@ -21,7 +22,7 @@ export const appApiSLice = createApi({
     }),
     createDeployment: builder.mutation<
       CreateDeploymentResponse,
-      CreateProjectProps
+      CreateDeploymentProps
     >({
       query: (info) => ({
         url: "/app/deploy",
