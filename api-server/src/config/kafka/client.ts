@@ -3,6 +3,11 @@ import { client } from "../clickhouse/client";
 import { v4 } from "uuid";
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const kafka = new Kafka({
   brokers: process.env.KAFKA_BROKERS!.split(","),
@@ -20,15 +25,8 @@ const kafka = new Kafka({
 const consumer = kafka.consumer({ groupId: "api-server-logs-consumer" });
 
 export async function initkafkaConsumer() {
-  const response = await client.query({
-    query: "SELECT 1",
-    format: "JSONEachRow",
-  });
-  console.log("hi");
   await consumer.connect();
-  console.log("hi");
   await consumer.subscribe({ topics: ["container-logs"], fromBeginning: true });
-  console.log("hi-2");
   await consumer.run({
     eachBatch: async function ({
       batch,
