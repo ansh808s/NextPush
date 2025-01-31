@@ -30,25 +30,41 @@ const kafka = new Kafka({
 
 const producer = kafka.producer()
 
-async function publishLog(log) {
-    await producer.send({ topic: `container-logs`, messages: [{ key: 'log', value: JSON.stringify({ PROJECT_ID, DEPLOYMENT_ID, log }) }] })
+async function publishLog(message, type = 'info') {
+    const logEntry = {
+        type,
+        message,
+        timestamp: new Date().toISOString(),
+        deployment_id: DEPLOYMENT_ID
+    };
+
+    console.log(`[${type.toUpperCase()}] ${message}`);
+
+    await producer.send({
+        topic: 'container-logs',
+        messages: [{
+            key: type,
+            value: JSON.stringify(logEntry)
+        }]
+    });
 }
+
 
 const uploadFiles = async (paths) => {
     console.log('Build Complete')
-    await publishLog("Build Complete")
+    await publishLog("Build Complete", "success");
     try {
         const distDirPath = path.join(__dirname, 'output', ...paths, 'dist')
         const distContent = fs.readdirSync(distDirPath, { recursive: true })
         console.log('Starting Upload')
-        await publishLog("Starting Uploading")
+        await publishLog("Starting Upload", "info");
         for (const file of distContent) {
             const filePath = path.join(distDirPath, file)
             if (fs.lstatSync(filePath).isDirectory()) {
                 continue;
             }
             console.log('Uploading', filePath)
-            await publishLog(`Uploading ${filePath}`)
+            await publishLog(`Uploading ${filePath}`, "info");
             const command = new PutObjectCommand({
                 Bucket: process.env.S3_BUCKET,
                 Key: `__outputs/${PROJECT_ID}/${file}`,
@@ -58,48 +74,60 @@ const uploadFiles = async (paths) => {
             await s3Client.send(command)
         }
     } catch (error) {
-        console.log(error)
-        await publishLog(`ERROR: ${error}`)
+        await publishLog(error.message, "error");
+        throw error;
     }
 
     console.log('Done')
-    await publishLog(`Deployment successfull`)
+    await publishLog("Deployment successful", "success");
 }
 
 
 const init = async () => {
-    await producer.connect()
-    await publishLog(`Starting build`)
-    let outDirPath
-    let paths
-    if (process.env.ROOT_DIR) {
-        paths = process.env.ROOT_DIR.split('/').filter((path) => path != "")
-        outDirPath = path.join(__dirname, "output", ...paths)
-    }
-    else {
-        outDirPath = path.join(__dirname, "output")
-        paths = []
-    }
-    let p
-    if (process.env.FRAMEWORK == 'react') {
-        p = exec(`cd ${outDirPath} && npm install && npm run build`)
-    }
-    if (process.env.FRAMEWORK == 'vanilla') {
-        p = exec(`cd ${outDirPath} && npm install`)
-    }
-    p.stdout.on('data', async (data) => {
-        console.log(data.toString())
-        await publishLog(data.toString())
-    })
+    try {
+        await producer.connect()
+        await publishLog("Starting build", "info");
+        let outDirPath
+        let paths
+        if (process.env.ROOT_DIR) {
+            paths = process.env.ROOT_DIR.split('/').filter((path) => path != "")
+            outDirPath = path.join(__dirname, "output", ...paths)
+        }
+        else {
+            outDirPath = path.join(__dirname, "output")
+            paths = []
+        }
+        let p
+        if (process.env.FRAMEWORK == 'react') {
+            p = exec(`cd ${outDirPath} && npm install && npm run build`)
+        }
+        if (process.env.FRAMEWORK == 'vanilla') {
+            p = exec(`cd ${outDirPath} && npm install`)
+        }
 
-    p.stdout.on('error', async (data) => {
-        console.log(data.toString())
-        await publishLog(`ERROR: ${data.toString()}`)
-    })
-    p.on('close', async (code) => {
-        await uploadFiles(paths);
-        process.exit(0)
-    });
+        p.stdout.on('data', async (data) => {
+            console.log(data.toString())
+            await publishLog(data.toString().trim(), "info");
+        })
+
+        p.stdout.on('error', async (data) => {
+            console.log(data.toString())
+            await publishLog(data.toString().trim(), "error");
+        })
+        p.on('close', async (code) => {
+            if (code === 0) {
+                await uploadFiles(paths);
+                process.exit(0);
+            } else {
+                await publishLog(`Process exited with code ${code}`, "error");
+                process.exit(1);
+            }
+        });
+    }
+    catch (error) {
+        await publishLog(error.message, "error");
+        process.exit(1);
+    }
 }
 
 init()
