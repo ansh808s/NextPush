@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
+import type { LogEvent } from "../../types/app.types";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -38,15 +39,30 @@ export async function initkafkaConsumer() {
       console.log(`Recv. ${messages.length} messages..`);
       for (const message of messages) {
         if (!message.value) continue;
-        const stringMessage = message.value.toString();
-        const { PROJECT_ID, DEPLOYMENT_ID, log } = JSON.parse(stringMessage);
-        console.log({ log, DEPLOYMENT_ID });
         try {
+          const stringMessage = message.value.toString();
+          const logEvent: LogEvent = JSON.parse(stringMessage);
+
+          console.log({
+            type: logEvent.type,
+            message: logEvent.message,
+            timestamp: logEvent.timestamp,
+          });
+
           const { query_id } = await client.insert({
             table: "log_events",
-            values: [{ event_id: v4(), deployment_id: DEPLOYMENT_ID, log }],
+            values: [
+              {
+                event_id: v4(),
+                deployment_id: logEvent.deployment_id,
+                type: logEvent.type,
+                message: logEvent.message,
+                timestamp: logEvent.timestamp,
+              },
+            ],
             format: "JSONEachRow",
           });
+
           console.log(query_id);
           resolveOffset(message.offset);
           //@ts-ignore
