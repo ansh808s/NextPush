@@ -33,3 +33,13 @@ export interface CreateDeploymentResponse {
   deploymentId: string;
   status: DeploymentStatus;
 }
+
+type LogType = "info" | "error" | "warning" | "success";
+
+export interface GetDeploymentLogsResponse {
+  event_id: string;
+  deployment_id: string;
+  type: LogType;
+  message: string;
+  timestamp: Date;
+}
