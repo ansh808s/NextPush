@@ -3,6 +3,12 @@ import { client } from "../../config/clickhouse/client";
 
 export const getDeploymentLogs: RequestHandler = async (req, res) => {
   const id = req.params.id;
+  if (!id) {
+    res.status(400).json({
+      message: "Deployment id not provided",
+    });
+    return;
+  }
   const logs = await client.query({
     query: `  SELECT 
         event_id,
