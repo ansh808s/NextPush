@@ -3,6 +3,7 @@ import {
   CreateDeploymentResponse,
   CreateProjectProps,
   CreateProjectResponse,
+  GetDeploymentLogsResponse,
 } from "@/types/app/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -33,8 +34,20 @@ export const appApiSLice = createApi({
         body: info,
       }),
     }),
+    getDeploymentLogs: builder.query<GetDeploymentLogsResponse, string>({
+      query: (id) => ({
+        url: `/app/logs/${id}`,
+        method: "GET",
+        headers: {
+          Authorization: localStorage.getItem("token")!,
+        },
+      }),
+    }),
   }),
 });
 
-export const { useCreateProjectMutation, useCreateDeploymentMutation } =
-  appApiSLice;
+export const {
+  useCreateProjectMutation,
+  useCreateDeploymentMutation,
+  useGetDeploymentLogsQuery,
+} = appApiSLice;
