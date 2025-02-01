@@ -36,7 +36,9 @@ export default function SelectRepo() {
 
   const handleContinue = () => {
     if (selectedRepo) {
-      router.push(`/setup-project?repo=${selectedRepo.name}`);
+      router.push(
+        `/setup-project?repo=${selectedRepo.name}&git=${selectedRepo.gitURL}`
+      );
     }
   };
 
