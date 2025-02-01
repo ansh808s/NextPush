@@ -21,7 +21,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Loader, Plus, X, Edit2 } from "lucide-react";
-import { supportedFrameworks } from "@/config/constant";
+import { SupportedFrameworks } from "@/config/constant";
 import {
   SetupProjectFormData,
   formSchema,
@@ -43,22 +43,43 @@ import {
 } from "@/components/ui/card";
 import { useGetTreeMutation } from "@/redux/api/userApiSlice";
 import { useSearchParams, useRouter } from "next/navigation";
-import { createProject } from "@/services/createProject";
+import {
+  useCreateDeploymentMutation,
+  useCreateProjectMutation,
+  useGetDeploymentLogsQuery,
+} from "@/redux/api/appApiSlice";
+import React from "react";
+import { LogEntry } from "@/types/app/types";
+import BuildLogs from "@/components/BuildLogs";
 
 export default function SetupProject() {
   const params = useSearchParams();
   const router = useRouter();
   const repo = params.get("repo")!;
+  const gitURL = params.get("git")!;
   const [isDirectoryModalOpen, setIsDirectoryModalOpen] = useState(false);
   const [selectedRootDir, setSelectedRootDir] = useState<string>("");
   const [children, setChildren] = useState<TreeNode[] | null>(null);
-  const [getTree, { isLoading }] = useGetTreeMutation();
+  const [getTree, { isLoading: isLoadingTree }] = useGetTreeMutation();
+  const [deploymentId, setDeploymentId] = useState<string | null>(null);
+  const [createProject, { isLoading: isLoadingProject }] =
+    useCreateProjectMutation();
+  const [createDeployment, { isLoading: isLoadingDeployment }] =
+    useCreateDeploymentMutation();
+  const [logs, setLogs] = useState<
+    Pick<LogEntry, "type" | "timestamp" | "message">[]
+  >([]);
+  const { data: logData, isFetching: isLoadingLogs } =
+    useGetDeploymentLogsQuery(deploymentId!, {
+      skip: !deploymentId,
+      pollingInterval: 4000,
+    });
 
   const form = useForm<SetupProjectFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      projectName: repo,
-      framework: "",
+      name: repo,
+      framework: undefined,
       envVars: [{ key: "", value: "" }],
       rootDir: "",
     },
@@ -84,16 +105,20 @@ export default function SetupProject() {
 
   const onSubmit = async (data: SetupProjectFormData) => {
     try {
-      createProject(data);
+      const project = await createProject({ ...data, gitURL }).unwrap();
+      const deployment = await createDeployment({
+        projectId: project.project,
+      }).unwrap();
+      setDeploymentId(deployment.deploymentId);
     } catch (error) {
       //TODO:
       console.log(error);
     }
   };
-
+  // TODO:Improve this code
   useEffect(() => {
     // TODO:Show toast
-    if (!repo) {
+    if (!repo || !gitURL) {
       router.push("/select-repo");
     }
     const tree = async () => {
@@ -107,6 +132,29 @@ export default function SetupProject() {
     };
     tree();
   }, []);
+
+  useEffect(() => {
+    if (!logData) {
+      return;
+    }
+    if (logData.logs.length > 0) {
+      setLogs((prevLogs) => {
+        if (prevLogs.length === 0) {
+          return logData.logs;
+        }
+        const lastExistingLog = prevLogs[prevLogs.length - 1];
+        const newLogsStartIndex = logData.logs.findIndex(
+          (log) => new Date(log.timestamp) > new Date(lastExistingLog.timestamp)
+        );
+        if (newLogsStartIndex !== -1) {
+          const newLogs = logData.logs.slice(newLogsStartIndex);
+          return [...prevLogs, ...newLogs];
+        }
+        return prevLogs;
+      });
+    }
+  }, [logData]);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <Card className="border-rose-200 dark:border-rose-800">
@@ -123,7 +171,7 @@ export default function SetupProject() {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={control}
-                name="projectName"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
                     <Label>Project Name</Label>
@@ -152,11 +200,13 @@ export default function SetupProject() {
                           <SelectValue placeholder="Select a framework" />
                         </SelectTrigger>
                         <SelectContent>
-                          {supportedFrameworks.map((fw) => (
-                            <SelectItem key={fw.value} value={fw.value}>
-                              {fw.label}
-                            </SelectItem>
-                          ))}
+                          {Object.entries(SupportedFrameworks).map(
+                            ([key, value]) => (
+                              <SelectItem key={value} value={value}>
+                                {key}
+                              </SelectItem>
+                            )
+                          )}
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -197,7 +247,7 @@ export default function SetupProject() {
                               <DialogTitle>Select Root Directory</DialogTitle>
                             </DialogHeader>
                             <div className="max-h-[300px] overflow-y-auto">
-                              {isLoading ? (
+                              {isLoadingTree ? (
                                 <>
                                   <Loader className="h-4 w-4 animate-spin" />
                                 </>
@@ -292,6 +342,11 @@ export default function SetupProject() {
           </Form>
         </CardContent>
       </Card>
+      <BuildLogs
+        isDeployed={!!deploymentId}
+        isLoadingLogs={isLoadingLogs}
+        logs={logs}
+      />
     </div>
   );
 }
