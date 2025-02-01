@@ -61,4 +61,5 @@ export interface GetProjectInfoResponse {
   userId: string;
   rootDir: string;
   framework: `${SupportedFrameworks}`;
+  Deployment: DeploymentResponse[];
 }
