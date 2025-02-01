@@ -26,6 +26,13 @@ export const getProject: RequestHandler = async (req, res) => {
             id: true,
           },
         },
+        user: {
+          select: {
+            avatarUrl: true,
+            username: true,
+            id: true,
+          },
+        },
       },
     });
     res.status(200).json(user);
