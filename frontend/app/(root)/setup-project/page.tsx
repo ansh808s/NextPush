@@ -62,6 +62,7 @@ export default function SetupProject() {
   const [children, setChildren] = useState<TreeNode[] | null>(null);
   const [getTree, { isLoading: isLoadingTree }] = useGetTreeMutation();
   const [deploymentId, setDeploymentId] = useState<string | null>(null);
+  const [projectId, setProjectId] = useState<string>("");
   const [createProject, { isLoading: isLoadingProject }] =
     useCreateProjectMutation();
   const [createDeployment, { isLoading: isLoadingDeployment }] =
@@ -106,8 +107,9 @@ export default function SetupProject() {
   const onSubmit = async (data: SetupProjectFormData) => {
     try {
       const project = await createProject({ ...data, gitURL }).unwrap();
+      setProjectId(project.project);
       const deployment = await createDeployment({
-        projectId: project.project,
+        projectId: projectId,
       }).unwrap();
       setDeploymentId(deployment.deploymentId);
     } catch (error) {
@@ -154,6 +156,18 @@ export default function SetupProject() {
       });
     }
   }, [logData]);
+
+  useEffect(() => {
+    if (!logs) {
+      return;
+    }
+    if (
+      logs[logs.length - 1].type == "error" ||
+      logs[logs.length - 1].type == "success"
+    ) {
+      router.push(`/project/${projectId}`);
+    }
+  }, [logs]);
 
   return (
     <div className="container mx-auto px-4 py-8">
