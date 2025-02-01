@@ -36,7 +36,7 @@ export interface CreateDeploymentResponse {
 
 type LogType = "info" | "error" | "warning" | "success";
 
-interface LogEntry {
+export interface LogEntry {
   event_id: string;
   deployment_id: string;
   type: LogType;
