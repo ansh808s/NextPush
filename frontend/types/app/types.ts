@@ -46,3 +46,19 @@ export interface LogEntry {
 export interface GetDeploymentLogsResponse {
   logs: LogEntry[];
 }
+
+export interface DeploymentResponse {
+  status: "string";
+  createdAt: Date;
+  id: string;
+}
+export interface GetProjectInfoResponse {
+  id: string;
+  name: string;
+  createdAt: Date;
+  gitURL: string;
+  subDomain: string;
+  userId: string;
+  rootDir: string;
+  framework: `${SupportedFrameworks}`;
+}
