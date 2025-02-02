@@ -51,6 +51,7 @@ import {
 import React from "react";
 import { LogEntry } from "@/types/app/types";
 import BuildLogs from "@/components/BuildLogs";
+import { toast } from "sonner";
 
 export default function SetupProject() {
   const params = useSearchParams();
@@ -63,10 +64,8 @@ export default function SetupProject() {
   const [getTree, { isLoading: isLoadingTree }] = useGetTreeMutation();
   const [deploymentId, setDeploymentId] = useState<string | null>(null);
   const [projectId, setProjectId] = useState<string>("");
-  const [createProject, { isLoading: isLoadingProject }] =
-    useCreateProjectMutation();
-  const [createDeployment, { isLoading: isLoadingDeployment }] =
-    useCreateDeploymentMutation();
+  const [createProject] = useCreateProjectMutation();
+  const [createDeployment] = useCreateDeploymentMutation();
   const [logs, setLogs] = useState<
     Pick<LogEntry, "type" | "timestamp" | "message">[]
   >([]);
@@ -106,22 +105,27 @@ export default function SetupProject() {
 
   const onSubmit = async (data: SetupProjectFormData) => {
     try {
+      toast.loading("Creating Project", { id: "project" });
       const project = await createProject({ ...data, gitURL }).unwrap();
+      toast.success("Project Created", { id: "project" });
+      toast.loading("Deploying", { id: "deploy" });
       setProjectId(project.project);
       const deployment = await createDeployment({
         projectId: projectId,
       }).unwrap();
+      toast.info("Deployment Started", { id: "deploy" });
       setDeploymentId(deployment.deploymentId);
     } catch (error) {
-      //TODO:
+      toast.error("Deployment failed", { id: "deploy" });
+      toast.error("Failed creating project", { id: "project" });
       console.log(error);
     }
   };
   // TODO:Improve this code
   useEffect(() => {
-    // TODO:Show toast
     if (!repo || !gitURL) {
       router.push("/select-repo");
+      toast.error("Repository not selected");
     }
     const tree = async () => {
       try {
@@ -165,6 +169,7 @@ export default function SetupProject() {
       logs[logs.length - 1].type == "error" ||
       logs[logs.length - 1].type == "success"
     ) {
+      toast.success("Deployment successfull");
       router.push(`/project/${projectId}`);
     }
   }, [logs]);
