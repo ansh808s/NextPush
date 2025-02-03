@@ -4,6 +4,7 @@ import {
   CreateProjectProps,
   CreateProjectResponse,
   GetDeploymentLogsResponse,
+  GetProjectInfoResponse,
 } from "@/types/app/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -43,6 +44,15 @@ export const appApiSLice = createApi({
         },
       }),
     }),
+    getProjectInfo: builder.query<GetProjectInfoResponse, string>({
+      query: (id) => ({
+        url: `app/project/${id}`,
+        method: "GET",
+        headers: {
+          Authorization: localStorage.getItem("token")!,
+        },
+      }),
+    }),
   }),
 });
 
@@ -50,4 +60,5 @@ export const {
   useCreateProjectMutation,
   useCreateDeploymentMutation,
   useGetDeploymentLogsQuery,
+  useGetProjectInfoQuery,
 } = appApiSLice;
