@@ -2,14 +2,13 @@ import { Kafka, type Consumer } from "kafkajs";
 import { client } from "../clickhouse/client";
 import { v4 } from "uuid";
 import type { LogEvent } from "../../types/app.types";
-import prisma from "../../../prisma/db";
 
 class KafkaConsumerManager {
   private kafka: Kafka;
   private consumer: Consumer;
   private isConnected: boolean = false;
   private heartbeatInterval: NodeJS.Timer | null = null;
-  private readonly HEARTBEAT_INTERVAL = 3000; // 3 seconds
+  private readonly HEARTBEAT_INTERVAL = 3000;
   private readonly MAX_RETRIES = 5;
   private retryCount = 0;
 
@@ -25,9 +24,8 @@ class KafkaConsumerManager {
 
     this.consumer = this.kafka.consumer({
       groupId: "api-server-logs-consumer",
-      sessionTimeout: 30000, // 30 seconds
-      heartbeatInterval: 3000, // 3 seconds
-      maxBytes: 5242880, // 5MB
+      sessionTimeout: 30000,
+      heartbeatInterval: 3000,
     });
 
     this.setupErrorHandlers();
@@ -86,12 +84,10 @@ class KafkaConsumerManager {
       clearInterval(this.heartbeatInterval);
     }
 
-    // Instead of directly calling heartbeat, we'll check connection status
     this.heartbeatInterval = setInterval(async () => {
       if (!this.isConnected) return;
 
       try {
-        // Send a metadata request to check connection
         await this.kafka.admin().listTopics();
       } catch (error) {
         console.error("Connection check failed:", error);
@@ -170,7 +166,6 @@ class KafkaConsumerManager {
               await this.processMessage(message);
               resolveOffset(message.offset);
               await commitOffsetsIfNecessary();
-              // Use the heartbeat provided by eachBatch
               await heartbeat();
             } catch (error) {
               console.error("Error in batch processing:", error);
@@ -197,7 +192,6 @@ class KafkaConsumerManager {
   }
 }
 
-// Export instance creation function
 export async function initKafkaConsumer() {
   const consumerManager = new KafkaConsumerManager();
   await consumerManager.initConsumer();
