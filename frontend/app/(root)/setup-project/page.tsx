@@ -142,8 +142,7 @@ export default function SetupProject() {
   useEffect(() => {
     if (!logData) {
       return;
-    }
-    if (logData.logs.length > 0) {
+    } else if (logData.logs.length > 0) {
       setLogs((prevLogs) => {
         if (prevLogs.length === 0) {
           return logData.logs;
@@ -162,7 +161,7 @@ export default function SetupProject() {
   }, [logData]);
 
   useEffect(() => {
-    if (!logs) {
+    if (logs.length == 0) {
       return;
     }
     if (
