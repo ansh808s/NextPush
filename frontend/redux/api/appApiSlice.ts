@@ -61,4 +61,5 @@ export const {
   useCreateDeploymentMutation,
   useGetDeploymentLogsQuery,
   useGetProjectInfoQuery,
+  useLazyGetDeploymentLogsQuery,
 } = appApiSLice;
