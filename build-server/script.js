@@ -18,14 +18,7 @@ const s3Client = new S3Client({
 const kafka = new Kafka({
     brokers: process.env.KAFKA_BROKERS.split(','),
     clientId: `build-server-${DEPLOYMENT_ID}`,
-    ssl: {
-        ca: [fs.readFileSync(path.join(__dirname, "kafka.pem"), "utf-8")],
-    },
-    sasl: {
-        username: process.env.KAFKA_USER,
-        password: process.env.KAFKA_PASS,
-        mechanism: "plain"
-    }
+
 })
 
 const producer = kafka.producer()
