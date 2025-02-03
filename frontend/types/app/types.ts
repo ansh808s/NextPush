@@ -70,3 +70,12 @@ export interface GetProjectInfoResponse {
   Deployment: DeploymentResponse[];
   user: UserResponse;
 }
+export const deploymentResponseStatus = {
+  NOT_STARTED: { label: "Not Started", color: "text-gray-500" },
+  QUEUED: { label: "Queued", color: "text-blue-500" },
+  IN_PROGRESS: { label: "In Progress", color: "text-yellow-500" },
+  READY: { label: "Ready", color: "text-green-500" },
+  FAILED: { label: "Failed", color: "text-red-500" },
+} as const;
+
+export type DeploymentStatusFromApi = keyof typeof deploymentResponseStatus;
