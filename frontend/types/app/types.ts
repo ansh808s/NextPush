@@ -52,6 +52,12 @@ export interface DeploymentResponse {
   createdAt: Date;
   id: string;
 }
+
+export interface UserResponse {
+  id: string;
+  avatarUrl: string;
+  username: string;
+}
 export interface GetProjectInfoResponse {
   id: string;
   name: string;
@@ -62,4 +68,5 @@ export interface GetProjectInfoResponse {
   rootDir: string;
   framework: `${SupportedFrameworks}`;
   Deployment: DeploymentResponse[];
+  user: UserResponse;
 }
