@@ -111,7 +111,7 @@ export default function SetupProject() {
       toast.loading("Deploying", { id: "deploy" });
       setProjectId(project.project);
       const deployment = await createDeployment({
-        projectId: projectId,
+        projectId: project.project,
       }).unwrap();
       toast.info("Deployment Started", { id: "deploy" });
       setDeploymentId(deployment.deploymentId);
@@ -160,18 +160,35 @@ export default function SetupProject() {
     }
   }, [logData]);
 
+  const isDeploymentComplete = (
+    logs: Pick<LogEntry, "type" | "timestamp" | "message">[]
+  ) => {
+    if (logs.length === 0) return false;
+    const hasError = logs.some((log) => log.type === "error");
+    if (hasError) {
+      return "error";
+    }
+    const hasSuccess = logs.some((log) => log.type === "success");
+    if (hasSuccess) {
+      return "success";
+    }
+    return null;
+  };
+
   useEffect(() => {
-    if (logs.length == 0) {
+    if (logs.length === 0) {
       return;
     }
-    if (
-      logs[logs.length - 1].type == "error" ||
-      logs[logs.length - 1].type == "success"
-    ) {
-      toast.success("Deployment successfull");
+    const deploymentStatus = isDeploymentComplete(logs);
+
+    if (deploymentStatus === "success") {
+      toast.success("Deployment successful");
+      router.push(`/project/${projectId}`);
+    } else if (deploymentStatus === "error") {
+      toast.error("Deployment failed");
       router.push(`/project/${projectId}`);
     }
-  }, [logs]);
+  }, [logs, projectId, router]);
 
   return (
     <div className="container mx-auto px-4 py-8">
