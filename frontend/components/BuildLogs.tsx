@@ -5,11 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Rocket } from "lucide-react";
 import { LogEntry } from "@/types/app/types";
 import LogItem from "./LogItem";
+import { cn } from "@/lib/utils";
 
 interface IBuildLogs {
   isDeployed: boolean;
   logs: Pick<LogEntry, "type" | "timestamp" | "message">[];
   isLoadingLogs: boolean;
+  isDashboardDisplay?: boolean;
 }
 
 export default function BuildLogs(props: IBuildLogs) {
@@ -20,16 +22,24 @@ export default function BuildLogs(props: IBuildLogs) {
     }
   }, [scrollAreaRef]);
   return (
-    <Card className="mt-8 border-rose-200 dark:border-rose-800">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold">
-          {props.isDeployed ? "Build Logs" : "Deployment Console"}
-        </CardTitle>
-      </CardHeader>
+    <Card className="border-rose-200 dark:border-rose-800">
+      {props.isDashboardDisplay ? (
+        <></>
+      ) : (
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">
+            {props.isDeployed ? "Build Logs" : "Deployment Console"}
+          </CardTitle>
+        </CardHeader>
+      )}
       <CardContent>
         {props.isDeployed ? (
           <ScrollArea
-            className="h-[600px] w-full rounded-md border p-4"
+            className={cn(
+              `h-[600px] w-full rounded-md ${
+                props.isDashboardDisplay ? "py-2" : "border p-4"
+              }`
+            )}
             ref={scrollAreaRef}
           >
             {props.logs.map((log, index) => (
