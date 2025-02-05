@@ -2,6 +2,7 @@ import { Kafka, type Consumer } from "kafkajs";
 import { client } from "../clickhouse/client";
 import { v4 } from "uuid";
 import type { LogEvent } from "../../types/app.types";
+import prisma from "../../../prisma/db";
 
 class KafkaConsumerManager {
   private kafka: Kafka;
@@ -116,7 +117,34 @@ class KafkaConsumerManager {
         message: logEvent.message,
         timestamp: logEvent.timestamp,
       });
-
+      if (logEvent.type === "error") {
+        try {
+          await prisma.deployment.update({
+            where: {
+              id: logEvent.deployment_id,
+            },
+            data: {
+              status: "FAILED",
+            },
+          });
+        } catch (error) {
+          console.error("Error updating deployment (error type):", error);
+        }
+      }
+      if (logEvent.type === "success") {
+        try {
+          await prisma.deployment.update({
+            where: {
+              id: logEvent.deployment_id,
+            },
+            data: {
+              status: "READY",
+            },
+          });
+        } catch (error) {
+          console.error("Error updating deployment (success type):", error);
+        }
+      }
       const { query_id } = await client.insert({
         table: "log_events",
         values: [
