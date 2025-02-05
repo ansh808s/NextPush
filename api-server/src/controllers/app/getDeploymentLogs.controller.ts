@@ -19,6 +19,7 @@ export const getDeploymentLogs: RequestHandler = async (req, res) => {
           timestamp
         FROM log_events 
         WHERE deployment_id = {deployment_id:String}
+        ORDER BY timestamp ASC
         `,
       query_params: {
         deployment_id: id,
