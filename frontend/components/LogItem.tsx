@@ -33,7 +33,7 @@ export default function LogItem(
         return "text-blue-500";
     }
   };
-
+  //TODO: Imrpove date display
   return (
     <div className="flex items-start space-x-2 py-1">
       <div className="flex-shrink-0 pt-1">{getIcon()}</div>

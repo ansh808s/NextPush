@@ -51,3 +51,11 @@ model Deployment {
   status    DeploymentStatus @default(NOT_STARTED)
   createdAt DateTime         @default(now()) @map("created_at")
 }
+
+model UserSiteAnalytics {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  eventType String   @map("event_type")
+  hostname  String
+  path      String
+}
