@@ -41,6 +41,7 @@ model Project {
   user              User                @relation(fields: [userId], references: [id])
   rootDir           String              @map("root_dir")
   framework         String
+  slug              String              @unique
   Deployment        Deployment[]
   UserSiteAnalytics UserSiteAnalytics[]
 }
