@@ -13,15 +13,17 @@ export const createProject: RequestHandler = async (req, res) => {
     return;
   }
   const data = parsedData.data;
+  const randomSlug = generateSlug();
   try {
     const project = await prisma.project.create({
       data: {
         gitURL: data.gitURL,
         name: data.name.trim().replace(/\s+/g, "-"),
         userId: req.userId,
-        subDomain: generateSlug(),
+        subDomain: randomSlug,
         framework: data.framework,
         rootDir: data.rootDir,
+        slug: `${data.name.trim().replace(/\s+/g, "-")}-${randomSlug}`,
       },
     });
     res.status(200).json({
@@ -30,8 +32,8 @@ export const createProject: RequestHandler = async (req, res) => {
       name: project.name,
       framework: data.framework,
       rootDir: data.rootDir,
-      slug: `${project.name}-${project.subDomain}`,
-      url: `http://${project.name}-${project.subDomain}.localhost:8000`,
+      slug: project.slug,
+      url: `http://${project.slug}.localhost:8000`,
     });
     return;
   } catch (error) {
