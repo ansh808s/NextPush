@@ -40,7 +40,7 @@ export const createDeployment: RequestHandler = async (req, res) => {
     await deployTask({
       deploymentId: deployment.id,
       gitURL: project.gitURL,
-      projectId: `${project.name}-${project.subDomain}`,
+      projectId: project.slug,
       framework: project.framework as `${SupportedFrameworks}`,
       rootDir: project.rootDir,
     });
@@ -48,7 +48,7 @@ export const createDeployment: RequestHandler = async (req, res) => {
     res.status(200).json({
       status: "queued",
       deploymentId: deployment.id,
-      url: `http://${project.name}-${project.subDomain}.localhost:8000`,
+      url: `http://${project.slug}.localhost:8000`,
     });
     return;
   } catch (error) {
