@@ -84,3 +84,7 @@ export interface GetSiteVisitsProps {
   type: string;
   id: string;
 }
+
+export interface GetSiteVisitsResponse {
+  visits: number;
+}
