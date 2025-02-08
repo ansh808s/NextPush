@@ -79,3 +79,8 @@ export const deploymentResponseStatus = {
 } as const;
 
 export type DeploymentStatusFromApi = keyof typeof deploymentResponseStatus;
+
+export interface GetSiteVisitsProps {
+  type: string;
+  id: string;
+}
