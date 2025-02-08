@@ -88,3 +88,8 @@ export interface GetSiteVisitsProps {
 export interface GetSiteVisitsResponse {
   visits: number;
 }
+
+export interface GetRouteVisitsProps {
+  type: string;
+  id: string;
+}
