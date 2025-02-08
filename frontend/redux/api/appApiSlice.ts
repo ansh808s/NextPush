@@ -68,6 +68,19 @@ export const appApiSLice = createApi({
         },
       }),
     }),
+    getRouteVisits: builder.query<GetSiteVisitsResponse, GetSiteVisitsProps>({
+      query: (queryProps) => ({
+        url: "app/route-visits",
+        method: "GET",
+        headers: {
+          Authorization: localStorage.getItem("token")!,
+        },
+        params: {
+          type: queryProps.type,
+          id: queryProps.id,
+        },
+      }),
+    }),
   }),
 });
 
