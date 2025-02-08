@@ -5,6 +5,8 @@ import {
   CreateProjectResponse,
   GetDeploymentLogsResponse,
   GetProjectInfoResponse,
+  GetSiteVisitsProps,
+  GetSiteVisitsResponse,
 } from "@/types/app/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -53,6 +55,19 @@ export const appApiSLice = createApi({
         },
       }),
     }),
+    getSiteVisits: builder.query<GetSiteVisitsResponse, GetSiteVisitsProps>({
+      query: (queryProps) => ({
+        url: "app/site-visits",
+        method: "GET",
+        headers: {
+          Authorization: localStorage.getItem("token")!,
+        },
+        params: {
+          type: queryProps.type,
+          id: queryProps.id,
+        },
+      }),
+    }),
   }),
 });
 
@@ -62,4 +77,5 @@ export const {
   useGetDeploymentLogsQuery,
   useGetProjectInfoQuery,
   useLazyGetDeploymentLogsQuery,
+  useGetSiteVisitsQuery,
 } = appApiSLice;
