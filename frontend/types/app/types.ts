@@ -93,3 +93,12 @@ export interface GetRouteVisitsProps {
   type: string;
   id: string;
 }
+
+export interface RotueVisit {
+  _count: number;
+  path: string;
+}
+
+export interface GetRouteVisitsResponse {
+  visits: RotueVisit[];
+}
