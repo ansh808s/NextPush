@@ -4,3 +4,11 @@ export interface LogEvent {
   timestamp: string;
   deployment_id: string;
 }
+
+export type UserSiteAnalyticsEvent = {
+  eventId: string;
+  siteSlug: string;
+  eventType: "pageview";
+  hostname: string;
+  path: string;
+};
