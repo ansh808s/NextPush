@@ -93,4 +93,5 @@ export const {
   useGetProjectInfoQuery,
   useLazyGetDeploymentLogsQuery,
   useGetSiteVisitsQuery,
+  useGetRouteVisitsQuery,
 } = appApiSLice;
