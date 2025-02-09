@@ -5,6 +5,8 @@ import {
   CreateProjectResponse,
   GetDeploymentLogsResponse,
   GetProjectInfoResponse,
+  GetRouteVisitsProps,
+  GetRouteVisitsResponse,
   GetSiteVisitsProps,
   GetSiteVisitsResponse,
 } from "@/types/app/types";
@@ -68,7 +70,7 @@ export const appApiSLice = createApi({
         },
       }),
     }),
-    getRouteVisits: builder.query<GetSiteVisitsResponse, GetSiteVisitsProps>({
+    getRouteVisits: builder.query<GetRouteVisitsResponse, GetRouteVisitsProps>({
       query: (queryProps) => ({
         url: "app/route-visits",
         method: "GET",
