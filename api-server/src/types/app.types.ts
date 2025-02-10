@@ -12,3 +12,8 @@ export type UserSiteAnalyticsEvent = {
   hostname: string;
   path: string;
 };
+
+export type DayVisits = {
+  date: Date;
+  count: number;
+};
