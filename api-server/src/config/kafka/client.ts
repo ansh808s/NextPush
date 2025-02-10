@@ -86,12 +86,19 @@ class KafkaConsumerManager {
         return;
       }
       console.log({
-        type: event.eventId,
+        id: event.eventId,
         site_id: event.siteSlug,
       });
 
-      await prisma.userSiteAnalytics.create({
-        data: {
+      await prisma.userSiteAnalytics.upsert({
+        where: { id: event.eventId },
+        update: {
+          eventType: event.eventType,
+          hostname: event.hostname,
+          path: event.path,
+          projectId,
+        },
+        create: {
           id: event.eventId,
           eventType: event.eventType,
           hostname: event.hostname,
@@ -158,20 +165,20 @@ class KafkaConsumerManager {
       await this.logConsumer.connect();
       await this.logConsumer.subscribe({
         topics: ["container-logs"],
-        fromBeginning: true,
+        fromBeginning: false,
       });
 
       await this.analyticsConsumer.connect();
       await this.analyticsConsumer.subscribe({
         topics: ["site-analytics"],
-        fromBeginning: true,
+        fromBeginning: false,
       });
 
       this.isConnected = true;
       this.startHeartbeat();
 
       await this.logConsumer.run({
-        autoCommit: false,
+        autoCommit: true,
         eachBatch: async ({
           batch,
           resolveOffset,
