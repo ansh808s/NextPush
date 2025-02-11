@@ -1,6 +1,13 @@
 import type { RequestHandler } from "express";
 import prisma from "../../../prisma/db";
-import { startOfDay, endOfDay, startOfWeek, endOfWeek } from "date-fns";
+import {
+  startOfDay,
+  endOfDay,
+  startOfWeek,
+  endOfWeek,
+  addDays,
+  format,
+} from "date-fns";
 import type { DayVisits } from "../../types/app.types";
 
 export const getSiteVisits: RequestHandler = async (req, res) => {
@@ -37,10 +44,28 @@ export const getSiteVisits: RequestHandler = async (req, res) => {
       GROUP BY DATE(created_at)
       ORDER BY date ASC
     `;
+
+      const allDays = Array.from({ length: 7 }, (_, i) => {
+        const dayDate = addDays(startOfWeek(date), i);
+        return {
+          date: format(dayDate, "yyyy-MM-dd"),
+          dayName: format(dayDate, "EEEE"),
+          count: 0,
+        };
+      });
+      visits.forEach((visit) => {
+        const visitDate = format(new Date(visit.date), "yyyy-MM-dd"); // Format Prisma date correctly
+        const dayIndex = allDays.findIndex((day) => day.date === visitDate);
+
+        if (dayIndex !== -1) {
+          allDays[dayIndex].count = Number(visit.count);
+        }
+      });
+
       res.status(200).json({
-        visits: visits.map((visit) => ({
-          date: visit.date.toLocaleDateString("en-US", { weekday: "long" }),
-          count: Number(visit.count),
+        visits: allDays.map((day) => ({
+          date: day.dayName,
+          count: day.count,
         })),
       });
       return;
