@@ -71,6 +71,7 @@ export const appApiSLice = createApi({
         params: {
           type: queryProps.type,
           id: queryProps.id,
+          timezone: queryProps.timezone,
         },
       }),
     }),
