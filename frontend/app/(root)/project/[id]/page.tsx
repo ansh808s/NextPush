@@ -52,7 +52,11 @@ export default function Dashboard() {
     });
 
   const { data: weeklyVisitsData, isFetching: isLoadingVisits } =
-    useGetSiteVisitsQuery({ id, type: "week" });
+    useGetSiteVisitsQuery({
+      id,
+      type: "week",
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    });
   return (
     <div className="container mx-auto px-4 py-8">
       {isProjectInfoLoading || !projectData ? (
@@ -249,10 +253,7 @@ export default function Dashboard() {
                     <h3 className="text-lg font-semibold mb-2">
                       Analytics Overview
                     </h3>
-                    <div
-                      className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4"
-                      style={{ height: "300px" }}
-                    ></div>
+                    <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4"></div>
                   </div>
                 </div>
               </TabsContent>
