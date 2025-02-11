@@ -83,6 +83,7 @@ export type DeploymentStatusFromApi = keyof typeof deploymentResponseStatus;
 export interface GetSiteVisitsProps {
   type: string;
   id: string;
+  timezone: string;
 }
 
 export interface GetSiteVisitsDayResponse {
