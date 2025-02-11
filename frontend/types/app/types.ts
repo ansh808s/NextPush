@@ -85,7 +85,7 @@ export interface GetSiteVisitsProps {
   id: string;
 }
 
-export interface GetSiteVisitsResponse {
+export interface GetSiteVisitsDayResponse {
   visits: number;
 }
 
@@ -101,4 +101,13 @@ export interface RotueVisit {
 
 export interface GetRouteVisitsResponse {
   visits: RotueVisit[];
+}
+
+export interface DaySiteVisits {
+  date: string;
+  count: number;
+}
+
+export interface GetSiteVisitsWeekResponse {
+  visits: DaySiteVisits[];
 }
