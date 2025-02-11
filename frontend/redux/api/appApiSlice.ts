@@ -7,8 +7,9 @@ import {
   GetProjectInfoResponse,
   GetRouteVisitsProps,
   GetRouteVisitsResponse,
+  GetSiteVisitsDayResponse,
   GetSiteVisitsProps,
-  GetSiteVisitsResponse,
+  GetSiteVisitsWeekResponse,
 } from "@/types/app/types";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
@@ -57,7 +58,10 @@ export const appApiSLice = createApi({
         },
       }),
     }),
-    getSiteVisits: builder.query<GetSiteVisitsResponse, GetSiteVisitsProps>({
+    getSiteVisits: builder.query<
+      GetSiteVisitsDayResponse | GetSiteVisitsWeekResponse,
+      GetSiteVisitsProps
+    >({
       query: (queryProps) => ({
         url: "app/site-visits",
         method: "GET",
