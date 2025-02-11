@@ -9,16 +9,19 @@ import { useParams } from "next/navigation";
 import {
   useGetDeploymentLogsQuery,
   useGetProjectInfoQuery,
+  useGetSiteVisitsQuery,
 } from "@/redux/api/appApiSlice";
 import { Skeleton } from "@/components/ui/skeleton";
 import BuildLogs from "@/components/BuildLogs";
 import { SupportedFrameworks } from "@/config/constant";
 import {
+  DaySiteVisits,
   deploymentResponseStatus,
   DeploymentStatusFromApi,
 } from "@/types/app/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DeploymentsTab from "@/components/DeploymentsTab";
+import WeeklyVisitsChart from "@/components/WeeklyVisitsChart";
 
 const DetailItem = ({ label, value }: { label: string; value: ReactNode }) => (
   <div className="mb-4">
@@ -29,7 +32,7 @@ const DetailItem = ({ label, value }: { label: string; value: ReactNode }) => (
 
 export default function Dashboard() {
   const params = useParams();
-  const id = params.id!;
+  const id = params.id! as string;
   const { data: projectData, isFetching: isProjectInfoLoading } =
     useGetProjectInfoQuery(id as string);
   const [deploymentId, setDeploymentId] = useState<string>("");
@@ -48,6 +51,8 @@ export default function Dashboard() {
       skip: !deploymentId,
     });
 
+  const { data: weeklyVisitsData, isFetching: isLoadingVisits } =
+    useGetSiteVisitsQuery({ id, type: "week" });
   return (
     <div className="container mx-auto px-4 py-8">
       {isProjectInfoLoading || !projectData ? (
@@ -205,9 +210,16 @@ export default function Dashboard() {
                       Weekly Visits
                     </h3>
                     <div
-                      className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4"
+                      className="bg-gray-100 dark:bg-gray-800 rounded-lg p-2"
                       style={{ height: "300px" }}
-                    ></div>
+                    >
+                      <WeeklyVisitsChart
+                        loading={isLoadingVisits}
+                        weeklyVisitData={
+                          weeklyVisitsData?.visits as DaySiteVisits[]
+                        }
+                      />
+                    </div>
                   </div>
                 </div>
                 <div className="mt-7 ">
