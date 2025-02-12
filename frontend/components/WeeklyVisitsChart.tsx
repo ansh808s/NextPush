@@ -23,7 +23,6 @@ interface IWeeklyVisitsChart {
 }
 
 export default function WeeklyVisitsChart(props: IWeeklyVisitsChart) {
-  console.log(props.weeklyVisitData);
   return (
     <>
       {props.loading ? (
