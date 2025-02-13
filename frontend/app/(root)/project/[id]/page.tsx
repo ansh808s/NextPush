@@ -22,6 +22,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DeploymentsTab from "@/components/DeploymentsTab";
 import WeeklyVisitsChart from "@/components/WeeklyVisitsChart";
+import DashBoardAnalytics from "@/components/DashBoardAnalytics";
 
 const DetailItem = ({ label, value }: { label: string; value: ReactNode }) => (
   <div className="mb-4">
@@ -253,7 +254,9 @@ export default function Dashboard() {
                     <h3 className="text-lg font-semibold mb-2">
                       Analytics Overview
                     </h3>
-                    <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4"></div>
+                    <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4">
+                      <DashBoardAnalytics projectId={id} />
+                    </div>
                   </div>
                 </div>
               </TabsContent>
