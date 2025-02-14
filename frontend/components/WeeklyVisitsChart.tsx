@@ -1,5 +1,5 @@
 "use client";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 
 import {
   ChartConfig,
@@ -20,6 +20,7 @@ const chartConfig = {
 interface IWeeklyVisitsChart {
   weeklyVisitData?: DaySiteVisits[];
   loading: boolean;
+  labels: boolean;
 }
 
 export default function WeeklyVisitsChart(props: IWeeklyVisitsChart) {
@@ -42,7 +43,16 @@ export default function WeeklyVisitsChart(props: IWeeklyVisitsChart) {
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="count" fill="var(--color-count)" radius={8} />
+            <Bar dataKey="count" fill="var(--color-count)" radius={8}>
+              {props.labels && (
+                <LabelList
+                  position="top"
+                  offset={12}
+                  className="fill-foreground"
+                  fontSize={12}
+                />
+              )}
+            </Bar>
           </BarChart>
         </ChartContainer>
       )}
