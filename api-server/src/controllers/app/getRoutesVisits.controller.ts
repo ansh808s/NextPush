@@ -10,9 +10,6 @@ export const getRouteVisits: RequestHandler = async (req, res) => {
     res.status(400).json({
       message: "Invalid inputs",
     });
-    console.log(id);
-    console.log(Array.isArray(id));
-    console.log(timezone);
     return;
   }
 
