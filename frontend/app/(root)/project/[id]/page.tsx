@@ -219,6 +219,7 @@ export default function Dashboard() {
                       style={{ height: "300px" }}
                     >
                       <WeeklyVisitsChart
+                        labels={false}
                         loading={isLoadingVisits}
                         weeklyVisitData={
                           weeklyVisitsData?.visits as DaySiteVisits[]
