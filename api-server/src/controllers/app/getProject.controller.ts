@@ -36,5 +36,7 @@ export const getProject: RequestHandler = async (req, res) => {
       },
     });
     res.status(200).json(user);
-  } catch (error) {}
+  } catch (error) {
+    res.status(500).json({ msg: "Something went wrong" });
+  }
 };
