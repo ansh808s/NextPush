@@ -16,7 +16,7 @@
   "dependencies": {
     "@aws-sdk/client-ecs": "^3.731.1",
     "@clickhouse/client": "^1.10.1",
-    "@prisma/client": "6.1.0",
+    "@prisma/client": "6.6.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
@@ -28,7 +28,7 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "kafkajs": "^2.2.4",
-    "prisma": "^6.1.0",
+    "prisma": "^6.6.0",
     "random-word-slugs": "^0.1.7",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
