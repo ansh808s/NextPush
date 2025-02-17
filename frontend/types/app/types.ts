@@ -113,12 +113,14 @@ export interface GetSiteVisitsWeekResponse {
   visits: DaySiteVisits[];
 }
 
-export interface UserProjects {
+export interface GetUserProjectsResponse {
   id: string;
   name: string;
   gitURL: string;
   slug: string;
   framework: `${SupportedFrameworks}`;
+  createdAt: string;
+  deployment: LastDeploymentStatus[];
 }
 
 export interface LastDeploymentStatus {
