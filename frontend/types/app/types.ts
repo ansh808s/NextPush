@@ -112,3 +112,11 @@ export interface DaySiteVisits {
 export interface GetSiteVisitsWeekResponse {
   visits: DaySiteVisits[];
 }
+
+export interface UserProjects {
+  id: string;
+  name: string;
+  gitURL: string;
+  slug: string;
+  framework: `${SupportedFrameworks}`;
+}
