@@ -120,3 +120,7 @@ export interface UserProjects {
   slug: string;
   framework: `${SupportedFrameworks}`;
 }
+
+export interface LastDeploymentStatus {
+  status: keyof typeof deploymentResponseStatus;
+}
