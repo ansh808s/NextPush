@@ -8,6 +8,11 @@ export const getUsererojects: RequestHandler = async (req, res) => {
       where: {
         userId,
       },
+      omit: {
+        rootDir: true,
+        subDomain: true,
+        userId: true,
+      },
       include: {
         Deployment: {
           take: 1,
@@ -20,7 +25,11 @@ export const getUsererojects: RequestHandler = async (req, res) => {
         },
       },
     });
-    res.status(200).json(projects);
+    const formattedProjects = projects.map(({ Deployment, ...project }) => ({
+      ...project,
+      deployment: Deployment,
+    }));
+    res.status(200).json(formattedProjects);
     return;
   } catch (error) {
     res.status(500).json({ msg: "Something went wrong" });
