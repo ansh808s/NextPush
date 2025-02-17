@@ -27,6 +27,7 @@ export default function DashBoardAnalytics(props: IDashBoardAnalytics) {
       type: "week",
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     });
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-6">
@@ -48,7 +49,6 @@ export default function DashBoardAnalytics(props: IDashBoardAnalytics) {
           </CardContent>
         </Card>
       </div>
-      <div className="grid grid-cols-2 gap-6"></div>
     </div>
   );
 }
