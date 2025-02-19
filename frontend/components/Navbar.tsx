@@ -12,7 +12,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { ChevronDown, Menu, Plus, Layers } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { useState } from "react";
 
 export default function Navbar() {
@@ -84,6 +89,7 @@ export default function Navbar() {
       </div>
       <div className="flex items-center gap-4 mr-3">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTitle className="sr-only">Nav menu</SheetTitle>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" className="md:hidden">
               <Menu className="!h-7 !w-7" />
