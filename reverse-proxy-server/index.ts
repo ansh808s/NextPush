@@ -4,6 +4,8 @@ import type { UserSiteAnalyticsEvent } from "./types/analytics/types";
 import { sendUserSiteAnalyticsEvent } from "./config/kafka/producer";
 import { v4 as uuidv4 } from "uuid";
 import { shouldTrackPath } from "./utils/pathFilter";
+import fs from "fs";
+import path from "path";
 
 const app = express();
 const PORT = 8000;
@@ -24,6 +26,9 @@ async function logAnalytics(req: express.Request) {
   await sendUserSiteAnalyticsEvent(event);
 }
 
+const custom404File = path.join(__dirname, "404.html");
+const custom404 = fs.readFileSync(custom404File, "utf-8");
+
 app.use((req, res) => {
   logAnalytics(req).catch(console.error);
   const hostname = req.hostname;
@@ -34,6 +39,15 @@ app.use((req, res) => {
     target: resolvesTo,
     changeOrigin: true,
     pathRewrite: (path) => (path === "/" ? "/index.html" : path),
+    on: {
+      proxyRes: (proxyRes, req, res) => {
+        if (proxyRes.statusCode == 403 || proxyRes.statusCode == 404) {
+          res.setHeader("Content-Type", "text/html");
+          res.statusCode = 404;
+          res.end(custom404);
+        }
+      },
+    },
   })(req, res);
 });
 
