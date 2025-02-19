@@ -62,7 +62,10 @@ export default function ProjectsDashboard() {
     <div className="container mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">My Projects</h1>
-        <Button className="bg-rose-500 hover:bg-rose-600 text-white">
+        <Button
+          onClick={() => router.push("/select-repo")}
+          className="bg-rose-500 hover:bg-rose-600 text-white"
+        >
           <Plus className="mr-2 h-4 w-4" /> New Project
         </Button>
       </div>
