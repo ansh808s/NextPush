@@ -21,6 +21,7 @@ import {
 import { Globe, Github, Plus, Search, Code, Calendar } from "lucide-react";
 import { useGetUserProjectsQuery } from "@/redux/api/appApiSlice";
 import moment from "moment";
+import { useRouter } from "next/navigation";
 
 export default function ProjectsDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -29,6 +30,7 @@ export default function ProjectsDashboard() {
   //   TODO: Loading
   const { data: projects, isFetching: isProjectsLoading } =
     useGetUserProjectsQuery();
+  const router = useRouter();
 
   const filteredProjects = projects?.filter((project) => {
     const matchesSearch = project.name
@@ -51,6 +53,10 @@ export default function ProjectsDashboard() {
     "All",
     ...new Set(projects?.map((project) => project.deployment[0].status)),
   ];
+
+  const handleDashboardRedirect = (id: string) => {
+    router.push(`/project/${id}`);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -105,7 +111,10 @@ export default function ProjectsDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredProjects?.map((project) => (
-          <div className="" key={project.id}>
+          <div
+            onClick={() => handleDashboardRedirect(project.id)}
+            key={project.id}
+          >
             <Card className="h-full transition-all duration-300 hover:shadow-lg  border-gray-200 dark:border-gray-700">
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
@@ -166,7 +175,8 @@ export default function ProjectsDashboard() {
                     <div className="flex items-center">
                       <Calendar className="mr-1 h-4 w-4" />
                       <span>
-                        Created: {moment(project.createdAt).format("MMM Do YY")}
+                        Created:{" "}
+                        {moment(project.createdAt).format("Do MMMM YYYY")}
                       </span>
                     </div>
                   )}
@@ -175,6 +185,7 @@ export default function ProjectsDashboard() {
               <CardFooter>
                 <Button
                   variant="outline"
+                  onClick={() => handleDashboardRedirect(project.id)}
                   className="w-full border-rose-500 text-rose-500 dark:bg-neutral-900 hover:bg-rose-50 dark:hover:bg-rose-900"
                 >
                   View Dashboard
