@@ -3,6 +3,7 @@ import {
   CreateDeploymentResponse,
   CreateProjectProps,
   CreateProjectResponse,
+  DeleteProjectResponse,
   GetDeploymentLogsResponse,
   GetProjectInfoResponse,
   GetRouteVisitsProps,
@@ -98,6 +99,15 @@ export const appApiSLice = createApi({
         },
       }),
     }),
+    deleteProject: builder.mutation<DeleteProjectResponse, void>({
+      query: (id) => ({
+        url: `/app/project/${id}`,
+        method: "DELETE",
+        headers: {
+          Authorization: localStorage.getItem("token")!,
+        },
+      }),
+    }),
   }),
 });
 
@@ -110,4 +120,5 @@ export const {
   useGetSiteVisitsQuery,
   useGetRouteVisitsQuery,
   useGetUserProjectsQuery,
+  useDeleteProjectMutation,
 } = appApiSLice;
