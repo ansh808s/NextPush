@@ -126,3 +126,7 @@ export interface GetUserProjectsResponse {
 export interface LastDeploymentStatus {
   status: keyof typeof deploymentResponseStatus;
 }
+
+export interface DeleteProjectResponse {
+  message: string;
+}
