@@ -130,3 +130,7 @@ export interface LastDeploymentStatus {
 export interface DeleteProjectResponse {
   message: string;
 }
+
+export interface DeleteProjectProps {
+  projectId: string;
+}
