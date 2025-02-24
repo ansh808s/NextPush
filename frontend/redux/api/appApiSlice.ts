@@ -3,6 +3,7 @@ import {
   CreateDeploymentResponse,
   CreateProjectProps,
   CreateProjectResponse,
+  DeleteProjectProps,
   DeleteProjectResponse,
   GetDeploymentLogsResponse,
   GetProjectInfoResponse,
@@ -99,7 +100,7 @@ export const appApiSLice = createApi({
         },
       }),
     }),
-    deleteProject: builder.mutation<DeleteProjectResponse, void>({
+    deleteProject: builder.mutation<DeleteProjectResponse, DeleteProjectProps>({
       query: (id) => ({
         url: `/app/project/${id}`,
         method: "DELETE",
