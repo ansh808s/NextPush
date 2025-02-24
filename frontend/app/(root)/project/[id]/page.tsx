@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Github, Globe, ArrowUpRight, Settings, Zap } from "lucide-react";
+import { Github, Globe, ArrowUpRight, Zap } from "lucide-react";
 import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -23,6 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DeploymentsTab from "@/components/DeploymentsTab";
 import WeeklyVisitsChart from "@/components/WeeklyVisitsChart";
 import DashBoardAnalytics from "@/components/DashBoardAnalytics";
+import DashboardSettings from "@/components/DashboardSettings";
 
 const DetailItem = ({ label, value }: { label: string; value: ReactNode }) => (
   <div className="mb-4">
@@ -75,12 +76,7 @@ export default function Dashboard() {
                 <Button className="bg-rose-500 hover:bg-rose-600 text-white">
                   <Zap className="mr-2 h-4 w-4" /> Redeploy
                 </Button>
-                <Button
-                  variant="outline"
-                  className="border-rose-500 text-rose-500 dark:bg-neutral-800 hover:bg-rose-50 dark:hover:bg-rose-900"
-                >
-                  <Settings className="mr-2 h-4 w-4" /> Settings
-                </Button>
+                <DashboardSettings id={projectData?.id} />
               </div>
             </div>
           </CardHeader>
