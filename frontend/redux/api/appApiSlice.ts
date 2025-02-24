@@ -101,8 +101,8 @@ export const appApiSLice = createApi({
       }),
     }),
     deleteProject: builder.mutation<DeleteProjectResponse, DeleteProjectProps>({
-      query: (id) => ({
-        url: `/app/project/${id}`,
+      query: (queryProps) => ({
+        url: `/app/project/${queryProps.projectId}`,
         method: "DELETE",
         headers: {
           Authorization: localStorage.getItem("token")!,
