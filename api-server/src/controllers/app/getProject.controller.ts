@@ -35,6 +35,10 @@ export const getProject: RequestHandler = async (req, res) => {
         },
       },
     });
+    if (user == null) {
+      res.status(404).json({ message: "Project not found" });
+      return;
+    }
     res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ msg: "Something went wrong" });
