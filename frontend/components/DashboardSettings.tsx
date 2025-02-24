@@ -10,8 +10,22 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { useDeleteProjectMutation } from "@/redux/api/appApiSlice";
+import { redirect } from "next/navigation";
 
-export default function DashboardSettings() {
+interface IDashboardSettings {
+  id: string;
+}
+
+export default function DashboardSettings(props: IDashboardSettings) {
+  // TODO: Add loading and error state
+  const [deleteProject, { isLoading }] = useDeleteProjectMutation();
+
+  const handleDeleteProject = async () => {
+    await deleteProject({ projectId: props.id });
+    redirect("/project");
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -31,7 +45,9 @@ export default function DashboardSettings() {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button type="submit">Confirm</Button>
+          <Button onClick={handleDeleteProject} type="submit">
+            Confirm
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
