@@ -12,20 +12,38 @@ export const createProject: RequestHandler = async (req, res) => {
     });
     return;
   }
-  const data = parsedData.data;
-  const randomSlug = generateSlug();
+
+  const userId = req.userId;
+
   try {
+    const count = await prisma.project.count({
+      where: {
+        userId: userId,
+      },
+    });
+
+    if (count >= 1) {
+      res.status(403).json({
+        message: "Free users can only create one project.",
+      });
+      return;
+    }
+
+    const data = parsedData.data;
+    const randomSlug = generateSlug();
+
     const project = await prisma.project.create({
       data: {
         gitURL: data.gitURL,
         name: data.name.trim().replace(/\s+/g, "-"),
-        userId: req.userId,
+        userId: userId,
         subDomain: randomSlug,
         framework: data.framework,
         rootDir: data.rootDir,
         slug: `${data.name.trim().replace(/\s+/g, "-")}-${randomSlug}`,
       },
     });
+
     res.status(200).json({
       project: project.id,
       subDomain: project.subDomain,
@@ -35,10 +53,8 @@ export const createProject: RequestHandler = async (req, res) => {
       slug: project.slug,
       url: `http://${project.slug}.localhost:8000`,
     });
-    return;
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ msg: "Something went wrong" });
-    return;
+    console.error("Project creation error:", error);
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
