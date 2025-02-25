@@ -115,9 +115,18 @@ export default function SetupProject() {
       }).unwrap();
       toast.info("Deployment Started", { id: "deploy" });
       setDeploymentId(deployment.deploymentId);
-    } catch (error) {
-      toast.error("Deployment failed", { id: "deploy" });
+    } catch (error: any) {
+      if (error?.status === 400) {
+        toast.error("Please check your inputs");
+      } else if (error?.status === 403) {
+        toast.error("You can't create more than one project in free account");
+      } else if (error?.status === 500) {
+        toast.error("Server error: Please try again later");
+      } else {
+        toast.error("Failed creating project");
+      }
       toast.error("Failed creating project", { id: "project" });
+
       console.log(error);
     }
   };
