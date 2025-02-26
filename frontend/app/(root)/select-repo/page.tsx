@@ -16,8 +16,9 @@ import { useGetRepoQuery } from "@/redux/api/userApiSlice";
 import { Repository } from "@/types/auth/types";
 import useDebounce from "@/hooks/useDebounce";
 import { Skeleton } from "@/components/ui/skeleton";
+import withAuth from "@/components/hoc/withAuth";
 
-export default function SelectRepo() {
+const SelectRepo = () => {
   const [search, setSearch] = useState<string>("");
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
   const debouncedSearch = useDebounce(search, 400);
@@ -118,4 +119,5 @@ export default function SelectRepo() {
       </Card>
     </div>
   );
-}
+};
+export default withAuth(SelectRepo);
