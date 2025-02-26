@@ -52,8 +52,9 @@ import React from "react";
 import { LogEntry } from "@/types/app/types";
 import BuildLogs from "@/components/BuildLogs";
 import { toast } from "sonner";
+import withAuth from "@/components/hoc/withAuth";
 
-export default function SetupProject() {
+const SetupProject = () => {
   const params = useSearchParams();
   const router = useRouter();
   const repo = params.get("repo")!;
@@ -393,4 +394,5 @@ export default function SetupProject() {
       />
     </div>
   );
-}
+};
+export default withAuth(SetupProject);
