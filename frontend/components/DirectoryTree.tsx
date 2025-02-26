@@ -1,10 +1,17 @@
 "use client";
-import { useState } from "react";
-import { ChevronRight, ChevronDown, Folder, Loader } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  ChevronRight,
+  ChevronDown,
+  Folder,
+  Loader,
+  AlertCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useGetTreeMutation } from "@/redux/api/userApiSlice";
+import { toast } from "sonner";
 
 export type TreeNode = {
   path: string;
@@ -31,10 +38,30 @@ export default function DirectoryTree({
   const [children, setChildren] = useState<TreeNode[] | null>(
     data.children || null
   );
-  const [getTree, { isLoading }] = useGetTreeMutation();
+  const [fetchError, setFetchError] = useState<boolean>(false);
+  const [getTree, { isLoading, error }] = useGetTreeMutation();
+
+  useEffect(() => {
+    if (error) {
+      const errorObject = error as any;
+      setFetchError(true);
+      if (errorObject?.status === 400) {
+        toast.error(`Bad request: Unable to load directory structure`);
+      } else if (errorObject?.status === 404) {
+        toast.error("User not found");
+      } else if (errorObject?.status === 500) {
+        toast.error("Server error: Failed to fetch directory structure");
+      } else {
+        toast.error("Failed to load directory structure");
+      }
+
+      console.error("Directory tree fetch error:", errorObject);
+    }
+  }, [error]);
 
   const handleToggle = async () => {
     if (!isOpen && !children) {
+      setFetchError(false);
       try {
         const response = await getTree({
           repo: repository,
@@ -62,6 +89,8 @@ export default function DirectoryTree({
         >
           {isLoading ? (
             <Loader className="h-4 w-4 animate-spin" />
+          ) : fetchError ? (
+            <AlertCircle className="h-4 w-4 text-rose-500" />
           ) : isOpen ? (
             <ChevronDown className="h-4 w-4" />
           ) : (
@@ -80,18 +109,34 @@ export default function DirectoryTree({
           <RadioGroupItem value={fullPath} id={fullPath} />
         </RadioGroup>
       </div>
-      {isOpen && children && (
+      {isOpen && (
         <div className="ml-4">
-          {children.map((child) => (
-            <DirectoryTree
-              key={child.sha}
-              repository={repository}
-              data={child}
-              onSelect={onSelect}
-              selectedPath={selectedPath}
-              currentPath={fullPath}
-            />
-          ))}
+          {fetchError ? (
+            <div className="text-rose-500 text-sm py-2 flex items-center">
+              <AlertCircle className="h-4 w-4 mr-2" />
+              Failed to load contents.
+              <Button
+                variant="link"
+                className="text-rose-400 p-0 ml-1 h-auto"
+                onClick={() => handleToggle()}
+              >
+                Retry
+              </Button>
+            </div>
+          ) : children && children.length > 0 ? (
+            children.map((child) => (
+              <DirectoryTree
+                key={child.sha}
+                repository={repository}
+                data={child}
+                onSelect={onSelect}
+                selectedPath={selectedPath}
+                currentPath={fullPath}
+              />
+            ))
+          ) : children && children.length === 0 ? (
+            <div className="text-gray-500 text-sm py-2">Empty directory</div>
+          ) : null}
         </div>
       )}
     </div>
