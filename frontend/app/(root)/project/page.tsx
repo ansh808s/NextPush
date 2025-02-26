@@ -22,8 +22,9 @@ import { Globe, Github, Plus, Search, Code, Calendar } from "lucide-react";
 import { useGetUserProjectsQuery } from "@/redux/api/appApiSlice";
 import moment from "moment";
 import { useRouter } from "next/navigation";
+import withAuth from "@/components/hoc/withAuth";
 
-export default function ProjectsDashboard() {
+const ProjectsDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [frameworkFilter, setFrameworkFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -200,4 +201,5 @@ export default function ProjectsDashboard() {
       </div>
     </div>
   );
-}
+};
+export default withAuth(ProjectsDashboard);
