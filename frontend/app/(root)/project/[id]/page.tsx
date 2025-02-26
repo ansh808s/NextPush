@@ -24,6 +24,7 @@ import DeploymentsTab from "@/components/DeploymentsTab";
 import WeeklyVisitsChart from "@/components/WeeklyVisitsChart";
 import DashBoardAnalytics from "@/components/DashBoardAnalytics";
 import DashboardSettings from "@/components/DashboardSettings";
+import withAuth from "@/components/hoc/withAuth";
 
 const DetailItem = ({ label, value }: { label: string; value: ReactNode }) => (
   <div className="mb-4">
@@ -32,7 +33,7 @@ const DetailItem = ({ label, value }: { label: string; value: ReactNode }) => (
   </div>
 );
 
-export default function Dashboard() {
+const Dashboard = () => {
   const params = useParams();
   const id = params.id! as string;
   const { data: projectData, isFetching: isProjectInfoLoading } =
@@ -263,4 +264,5 @@ export default function Dashboard() {
       )}
     </div>
   );
-}
+};
+export default withAuth(Dashboard);
