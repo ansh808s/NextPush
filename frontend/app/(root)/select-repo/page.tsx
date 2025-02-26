@@ -1,6 +1,5 @@
 "use client";
-//TODO:Handle failure to fetch inital repo
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -17,15 +16,33 @@ import { Repository } from "@/types/auth/types";
 import useDebounce from "@/hooks/useDebounce";
 import { Skeleton } from "@/components/ui/skeleton";
 import withAuth from "@/components/hoc/withAuth";
+import { toast } from "sonner";
 
 const SelectRepo = () => {
   const [search, setSearch] = useState<string>("");
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
   const debouncedSearch = useDebounce(search, 400);
-  const { data, error, isLoading } = useGetRepoQuery({
+  const { data, error, isLoading, isError } = useGetRepoQuery({
     query: debouncedSearch,
   });
   const router = useRouter();
+
+  useEffect(() => {
+    if (isError) {
+      const errorObject = error as any;
+      if (errorObject?.status === 404) {
+        toast.error("User not found");
+      } else if (errorObject?.status === 500) {
+        toast.error(
+          "Server error: Unable to fetch repositories. Please try again later"
+        );
+      } else {
+        toast.error("Failed to fetch repositories");
+      }
+
+      console.error("Repository fetch error:", errorObject);
+    }
+  }, [isError, error, router]);
 
   const handleSelectRepo = (repo: Repository) => {
     if (selectedRepo?.gitURL == repo.gitURL) {
@@ -70,12 +87,16 @@ const SelectRepo = () => {
               Array.from({ length: 5 }).map((_, index) => (
                 <Skeleton key={index} className="w-full h-28 " />
               ))
+            ) : isError ? (
+              <div className="pt-5 pb-2 flex justify-center items-center">
+                <p className="text-rose-500">
+                  Error loading repositories. Please try again.
+                </p>
+              </div>
             ) : data?.repos.length == 0 ? (
-              <>
-                <div className="pt-5 pb-2 flex justify-center items-center">
-                  <p className="text-white">No repository found!</p>
-                </div>
-              </>
+              <div className="pt-5 pb-2 flex justify-center items-center">
+                <p className="text-white">No repository found!</p>
+              </div>
             ) : (
               data?.repos.map((repo) => (
                 <Card
