@@ -35,6 +35,7 @@ export default function GithubAuthCallback() {
         console.log("User response:", userRes);
         localStorage.setItem("avatar", userRes.data.avatar);
         localStorage.setItem("token", userRes.token);
+        window.dispatchEvent(new Event("localStorageChange"));
         toast.success("Signed in successfully", { id: "signin" });
         if (redirectURL == "null") {
           router.push("/");
