@@ -142,8 +142,16 @@ const SetupProject = () => {
         const res = await getTree({ repo, sha: "main" }).unwrap();
         setChildren(res.tree);
       } catch (error) {
-        // TODO:
-        console.log(error);
+        const errorObject = error as any;
+        if (errorObject?.status === 400) {
+          toast.error(`Bad request: Unable to load directory structure`);
+        } else if (errorObject?.status === 404) {
+          toast.error("User not found");
+        } else if (errorObject?.status === 500) {
+          toast.error("Server error: Failed to fetch directory structure");
+        } else {
+          toast.error("Failed to load directory structure");
+        }
       }
     };
     tree();
