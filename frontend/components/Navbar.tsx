@@ -73,7 +73,14 @@ export default function Navbar() {
               </DropdownMenu>
             </li>
             <li>
-              <Link className="-ml-4 text-sm font-medium" href="/pricing">
+              <Link
+                className={`flex items-center gap-1 font-medium text-sm -ml-4 ${
+                  isActive("/project")
+                    ? "text-rose-500"
+                    : "text-gray-700 dark:text-gray-300"
+                }`}
+                href="/pricing"
+              >
                 Pricing
               </Link>
             </li>
