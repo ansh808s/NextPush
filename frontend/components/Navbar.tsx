@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Menu, Plus, Layers } from "lucide-react";
+import { ChevronDown, Menu, Plus, Layers, Github } from "lucide-react";
 import { usePathname } from "next/navigation";
 import {
   Sheet,
@@ -31,9 +31,25 @@ export default function Navbar() {
   return (
     <header className="border-b flex">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link href="/" className="text-2xl font-bold text-primary">
-          Ship-it
-        </Link>
+        <div className="flex items-center">
+          <Link href="/" className="text-2xl font-bold text-primary">
+            Ship-it
+          </Link>
+          <Button
+            variant="outline"
+            size="icon"
+            asChild
+            className="text-neutral-300 hover:text-neutral-400 ml-3"
+          >
+            <a
+              href="https://github.com/ansh808s/NextPush"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Github className="h-5 w-5" />
+            </a>
+          </Button>
+        </div>
 
         <nav className="md:block hidden">
           <ul className="flex space-x-4 items-center">
