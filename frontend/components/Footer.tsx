@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 export default function Footer() {
   return (
     <footer className="border-t">
@@ -8,7 +6,15 @@ export default function Footer() {
           <div className=""></div>
           <p className="mb-4 md:mb-0">
             <span className="text-muted-foreground">Developed by </span>
-            <span className="text-light">Ansh</span>
+            <a
+              href={"https://linktr.ee/ansh3839"}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span className="text-light underline underline-offset-2">
+                Ansh
+              </span>
+            </a>
           </p>
         </div>
       </div>
