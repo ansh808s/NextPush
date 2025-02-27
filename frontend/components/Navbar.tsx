@@ -38,12 +38,6 @@ export default function Navbar() {
         <nav className="md:block hidden">
           <ul className="flex space-x-4 items-center">
             <li>
-              <Link
-                href="#"
-                className="text-muted-foreground hover:text-primary"
-              ></Link>
-            </li>
-            <li>
               {" "}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -77,6 +71,11 @@ export default function Navbar() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+            </li>
+            <li>
+              <Link className="-ml-4 text-sm font-medium" href="/pricing">
+                Pricing
+              </Link>
             </li>
             <li>
               <LoginButton />
