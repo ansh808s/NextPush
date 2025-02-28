@@ -34,6 +34,8 @@ export const deployTask = async (props: IDeployTask) => {
             { name: "S3_REGION", value: process.env.S3_REGION },
             { name: "S3_ACCESS_KEY_ID", value: process.env.S3_ACCESS_KEY_ID },
             { name: "KAFKA_BROKERS", value: process.env.KAFKA_BROKERS },
+            { name: "KAFKA_USER", value: process.env.KAFKA_USER },
+            { name: "KAFKA_PASS", value: process.env.KAFKA_PASS },
             { name: "DEPLOYMENT_ID", value: props.deploymentId },
             {
               name: "S3_SECRET_ACCESS_KEY",
