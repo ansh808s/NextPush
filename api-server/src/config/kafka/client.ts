@@ -3,57 +3,41 @@ import { client } from "../clickhouse/client";
 import { v4 } from "uuid";
 import type { LogEvent, UserSiteAnalyticsEvent } from "../../types/app.types";
 import prisma from "../../../prisma/db";
+import fs from "fs";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 class KafkaConsumerManager {
   private kafka: Kafka;
   private logConsumer: Consumer;
   private analyticsConsumer: Consumer;
-  private isConnected: boolean = false;
-  private heartbeatInterval: NodeJS.Timer | null = null;
-  private readonly HEARTBEAT_INTERVAL = 3000;
-  private readonly MAX_RETRIES = 5;
-  private retryCount = 0;
 
   constructor() {
     this.kafka = new Kafka({
       brokers: process.env.KAFKA_BROKERS!.split(","),
       clientId: "api-server",
-      retry: {
-        initialRetryTime: 100,
-        retries: 8,
+      ssl: {
+        ca: [fs.readFileSync(path.join(__dirname, "kafka.pem"), "utf-8")],
+      },
+      sasl: {
+        username: process.env.KAFKA_USER!,
+        password: process.env.KAFKA_PASS!,
+        mechanism: "plain",
       },
     });
 
     this.logConsumer = this.kafka.consumer({
       groupId: "api-server-logs-consumer",
-      sessionTimeout: 30000,
-      heartbeatInterval: 3000,
     });
 
     this.analyticsConsumer = this.kafka.consumer({
       groupId: "analytics-consumer-group",
-      sessionTimeout: 30000,
-      heartbeatInterval: 3000,
-    });
-
-    this.setupErrorHandlers();
-  }
-
-  private setupErrorHandlers() {
-    [this.logConsumer, this.analyticsConsumer].forEach((consumer) => {
-      consumer.on("consumer.crash", async (event) => {
-        console.error("Consumer crashed:", event);
-        this.isConnected = false;
-        await this.handleCrash();
-      });
-
-      consumer.on("consumer.disconnect", async () => {
-        console.log("Consumer disconnected");
-        this.isConnected = false;
-        await this.handleDisconnect();
-      });
     });
   }
+
   private async findProjectByNameAndSubdomain(
     slug: string
   ): Promise<string | null> {
@@ -71,7 +55,9 @@ class KafkaConsumerManager {
       return null;
     }
   }
+
   private async processAnalyticsMessage(message: any) {
+    console.log(message);
     if (!message.value) return;
 
     try {
@@ -108,7 +94,6 @@ class KafkaConsumerManager {
       });
     } catch (error) {
       console.error("Error processing analytics message:", error);
-      throw error;
     }
   }
 
@@ -156,7 +141,6 @@ class KafkaConsumerManager {
       return query_id;
     } catch (error) {
       console.error("Error processing log message:", error);
-      throw error;
     }
   }
 
@@ -174,136 +158,43 @@ class KafkaConsumerManager {
         fromBeginning: false,
       });
 
-      this.isConnected = true;
-      this.startHeartbeat();
-
       await this.logConsumer.run({
-        autoCommit: true,
-        eachBatch: async ({
-          batch,
-          resolveOffset,
-          heartbeat,
-          commitOffsetsIfNecessary,
-        }) => {
-          const messages = batch.messages;
-          console.log(`Received ${messages.length} log messages`);
-
-          for (const message of messages) {
-            try {
-              await this.processLogMessage(message);
-              resolveOffset(message.offset);
-              await commitOffsetsIfNecessary();
-              await heartbeat();
-            } catch (error) {
-              console.error("Error in log batch processing:", error);
-            }
+        eachMessage: async ({ message }) => {
+          try {
+            await this.processLogMessage(message);
+          } catch (error) {
+            console.error("Error processing log message:", error);
           }
         },
       });
 
       await this.analyticsConsumer.run({
-        autoCommit: false,
-        eachBatch: async ({
-          batch,
-          resolveOffset,
-          heartbeat,
-          commitOffsetsIfNecessary,
-        }) => {
-          const messages = batch.messages;
-          console.log(`Received ${messages.length} analytics messages`);
-
-          for (const message of messages) {
-            try {
-              await this.processAnalyticsMessage(message);
-              resolveOffset(message.offset);
-              await commitOffsetsIfNecessary();
-              await heartbeat();
-            } catch (error) {
-              console.error("Error in analytics batch processing:", error);
-            }
+        eachMessage: async ({ message }) => {
+          try {
+            await this.processAnalyticsMessage(message);
+          } catch (error) {
+            console.error("Error processing analytics message:", error);
           }
         },
       });
+
+      console.log("Kafka consumers initialized successfully");
     } catch (error) {
-      console.error("Error initializing consumer:", error);
-      this.isConnected = false;
-      // @ts-ignore
-      if (error.code === "ECONNRESET") {
-        await this.handleDisconnect();
-      } else {
-        throw error;
-      }
+      console.error("Error initializing Kafka consumers:", error);
+      console.log("Retrying in 5 seconds...");
+      setTimeout(() => this.initConsumer(), 5000);
     }
   }
 
   public async shutdown() {
-    this.isConnected = false;
-    await this.stopHeartbeat();
-    await Promise.all([
-      this.logConsumer.disconnect(),
-      this.analyticsConsumer.disconnect(),
-    ]);
-  }
-
-  private async handleCrash() {
-    if (this.retryCount < this.MAX_RETRIES) {
-      this.retryCount++;
-      console.log(
-        `Attempting reconnect ${this.retryCount}/${this.MAX_RETRIES}`
-      );
-      await this.reconnect();
-    } else {
-      console.error("Max retries reached. Manual intervention required.");
-      process.exit(1);
-    }
-  }
-
-  private async handleDisconnect() {
     try {
-      await this.stopHeartbeat();
-      await this.reconnect();
+      await Promise.all([
+        this.logConsumer.disconnect(),
+        this.analyticsConsumer.disconnect(),
+      ]);
+      console.log("Kafka consumers disconnected");
     } catch (error) {
-      console.error("Error handling disconnect:", error);
-    }
-  }
-
-  private async reconnect() {
-    try {
-      if (this.isConnected) {
-        await Promise.all([
-          this.logConsumer.disconnect(),
-          this.analyticsConsumer.disconnect(),
-        ]);
-      }
-      await this.initConsumer();
-    } catch (error) {
-      console.error("Error during reconnection:", error);
-      setTimeout(() => this.reconnect(), 5000);
-    }
-  }
-
-  private startHeartbeat() {
-    if (this.heartbeatInterval) {
-      clearInterval(this.heartbeatInterval);
-    }
-
-    this.heartbeatInterval = setInterval(async () => {
-      if (!this.isConnected) return;
-
-      try {
-        await this.kafka.admin().listTopics();
-      } catch (error) {
-        console.error("Connection check failed:", error);
-        this.isConnected = false;
-        await this.handleDisconnect();
-      }
-    }, this.HEARTBEAT_INTERVAL);
-  }
-
-  private async stopHeartbeat() {
-    if (this.heartbeatInterval) {
-      clearInterval(this.heartbeatInterval);
-      this.heartbeatInterval = null;
+      console.error("Error shutting down Kafka consumers:", error);
     }
   }
 }
