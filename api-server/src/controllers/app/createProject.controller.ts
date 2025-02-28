@@ -14,6 +14,7 @@ export const createProject: RequestHandler = async (req, res) => {
   }
 
   const userId = req.userId;
+  const data = parsedData.data;
 
   try {
     const count = await prisma.project.count({
@@ -22,14 +23,23 @@ export const createProject: RequestHandler = async (req, res) => {
       },
     });
 
-    if (count >= 1) {
-      res.status(403).json({
-        message: "Free users can only create one project.",
-      });
+    // if (count >= 1) {
+    //   res.status(403).json({
+    //     message: "Free users can only create one project.",
+    //   });
+    //   return;
+    // }
+
+    const projectName = data.name.trim().replace(/\s+/g, "-");
+
+    const existing = await prisma.project.findUnique({
+      where: { name: projectName },
+    });
+    if (existing) {
+      res.status(409).json({ message: "Project name already exists." });
       return;
     }
 
-    const data = parsedData.data;
     const randomSlug = generateSlug();
 
     const project = await prisma.project.create({

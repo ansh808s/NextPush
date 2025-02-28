@@ -123,6 +123,8 @@ const SetupProject = () => {
         toast.error("You can't create more than one project in free account");
       } else if (error?.status === 500) {
         toast.error("Server error: Please try again later");
+      } else if (error?.status === 409) {
+        toast.error("Project name must be unique");
       } else {
         toast.error("Failed creating project");
       }
