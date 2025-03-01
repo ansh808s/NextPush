@@ -67,7 +67,7 @@ const uploadFiles = async (paths) => {
             await publishLog(`Uploading ${filePath}`, "info");
             const command = new PutObjectCommand({
                 Bucket: process.env.S3_BUCKET,
-                Key: `__outputs/${PROJECT_ID}/${file}`,
+                Key: `__outputs/${PROJECT_ID}/${DEPLOYMENT_ID}/${file}`,
                 Body: fs.createReadStream(filePath),
                 ContentType: mime.lookup(filePath)
             })
