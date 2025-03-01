@@ -57,7 +57,6 @@ class KafkaConsumerManager {
   }
 
   private async processAnalyticsMessage(message: any) {
-    console.log(message);
     if (!message.value) return;
 
     try {

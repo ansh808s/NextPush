@@ -30,11 +30,20 @@ export const createDeployment: RequestHandler = async (req, res) => {
       return;
     }
 
-    const deployment = await prisma.deployment.create({
-      data: {
-        projectId: data.projectId,
-        status: "QUEUED",
-      },
+    const deployment = await prisma.$transaction(async (tx) => {
+      const createdDeployment = await tx.deployment.create({
+        data: {
+          projectId: data.projectId,
+          status: "QUEUED",
+        },
+      });
+
+      await tx.project.update({
+        where: { id: project.id },
+        data: { currentDeploymentId: createdDeployment.id },
+      });
+
+      return createdDeployment;
     });
 
     await deployTask({
