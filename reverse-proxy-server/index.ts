@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { shouldTrackPath } from "./utils/pathFilter";
 import fs from "fs";
 import path from "path";
+import { getCurrentDeploymentId } from "./db";
 
 const app = express();
 const PORT = 8000;
@@ -29,11 +30,21 @@ async function logAnalytics(req: express.Request) {
 const custom404File = path.join(__dirname, "404.html");
 const custom404 = fs.readFileSync(custom404File, "utf-8");
 
-app.use((req, res) => {
+app.use(async (req, res) => {
   logAnalytics(req).catch(console.error);
   const hostname = req.hostname;
   const subdomain = hostname.split(".")[0];
-  const resolvesTo = `${S3_URI}/${subdomain}`;
+
+  const deployment = await getCurrentDeploymentId(subdomain);
+  if (!deployment) {
+    res.setHeader("Content-Type", "text/html");
+    res.statusCode = 404;
+    res.end(custom404);
+    return;
+  }
+
+  const resolvesTo = `${S3_URI}/${subdomain}/${deployment}`;
+  console.log(resolvesTo);
 
   return createProxyMiddleware({
     target: resolvesTo,
