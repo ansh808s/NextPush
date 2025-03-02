@@ -25,6 +25,7 @@ import WeeklyVisitsChart from "@/components/WeeklyVisitsChart";
 import DashBoardAnalytics from "@/components/DashBoardAnalytics";
 import DashboardSettings from "@/components/DashboardSettings";
 import withAuth from "@/components/hoc/withAuth";
+import { useRouter } from "next/navigation";
 
 const DetailItem = ({ label, value }: { label: string; value: ReactNode }) => (
   <div className="mb-4">
@@ -39,6 +40,7 @@ const Dashboard = () => {
   const { data: projectData, isFetching: isProjectInfoLoading } =
     useGetProjectInfoQuery(id as string);
   const [deploymentId, setDeploymentId] = useState<string>("");
+  const router = useRouter();
 
   useEffect(() => {
     if (!projectData) {
@@ -74,7 +76,10 @@ const Dashboard = () => {
                 {projectData.name}
               </CardTitle>
               <div className="flex space-x-2">
-                <Button className="bg-rose-500 hover:bg-rose-600 text-white">
+                <Button
+                  onClick={() => router.push(`/project/${id}/redeploy`)}
+                  className="bg-rose-500 hover:bg-rose-600 text-white"
+                >
                   <Zap className="mr-2 h-4 w-4" /> Redeploy
                 </Button>
                 <DashboardSettings id={projectData?.id} />
