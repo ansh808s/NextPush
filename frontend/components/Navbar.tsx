@@ -24,8 +24,8 @@ export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const isActive = (path: string) => {
-    return pathname === path;
+  const isActive = (...paths: string[]) => {
+    return paths.includes(pathname);
   };
 
   return (
@@ -60,7 +60,7 @@ export default function Navbar() {
                   <Button
                     variant="ghost"
                     className={`flex items-center gap-1 ${
-                      isActive("/project")
+                      isActive("/project", "/select-repo")
                         ? "text-rose-500"
                         : "text-gray-700 dark:text-gray-300"
                     }`}
@@ -91,7 +91,7 @@ export default function Navbar() {
             <li>
               <Link
                 className={`flex items-center gap-1 font-medium text-sm -ml-4 ${
-                  isActive("/project")
+                  isActive("/pricing")
                     ? "text-rose-500"
                     : "text-gray-700 dark:text-gray-300"
                 }`}
@@ -110,6 +110,9 @@ export default function Navbar() {
         </nav>
       </div>
       <div className="flex items-center gap-4 mr-3">
+        <div className="md:hidden">
+          <LoginButton />
+        </div>
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTitle className="sr-only">Nav menu</SheetTitle>
           <SheetTrigger asChild>
@@ -121,14 +124,14 @@ export default function Navbar() {
           <SheetContent side="right" className="w-[300px] sm:w-[400px]">
             <nav className="flex flex-col gap-4 mt-8">
               <Link
-                href="/projects"
+                href="/project"
                 className="flex items-center gap-2"
                 onClick={() => setIsOpen(false)}
               >
                 View All Projects
               </Link>
               <Link
-                href="/import-repository"
+                href="/select-repo"
                 className="flex items-center gap-2"
                 onClick={() => setIsOpen(false)}
               >
@@ -141,10 +144,6 @@ export default function Navbar() {
               >
                 Pricing
               </Link>
-              <div className="h-px bg-gray-200 dark:bg-gray-800 my-4" />
-              <button className="flex items-center gap-2 text-left">
-                Logout
-              </button>
             </nav>
           </SheetContent>
         </Sheet>
