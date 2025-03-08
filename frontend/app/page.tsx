@@ -4,6 +4,7 @@ import Image from "next/image";
 import placeholder from "../public/images/placeholder.svg";
 import Features from "@/components/section/Features";
 import Footer from "@/components/Footer";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -27,12 +28,14 @@ export default function Home() {
                 and effortless scaling. Your website, your way, in record time.
               </p>
               <div className="flex space-x-4">
-                <Button
-                  size="lg"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 rounded-lg text-lg"
-                >
-                  Get Started
-                </Button>
+                <Link href={"/select-repo"}>
+                  <Button
+                    size="lg"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-6 rounded-lg text-lg"
+                  >
+                    Get Started
+                  </Button>
+                </Link>
               </div>
             </div>
             <div className="relative">
