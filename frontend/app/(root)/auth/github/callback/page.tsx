@@ -32,26 +32,29 @@ export default function GithubAuthCallback() {
         toast.loading("Signing in...", { id: "signin" });
         const userRes = await createUser({ code }).unwrap();
         dispatch(setUser(userRes.data));
-        console.log("User response:", userRes);
         localStorage.setItem("avatar", userRes.data.avatar);
         localStorage.setItem("token", userRes.token);
         window.dispatchEvent(new Event("localStorageChange"));
         toast.success("Signed in successfully", { id: "signin" });
-        if (redirectURL == "null") {
+      } catch (error: unknown) {
+        let errMsg = "Something went wrong during sign-in.";
+        const err = error as FetchBaseQueryError;
+
+        if (err.status === 400 && "data" in err) {
+          errMsg = "Invalid input, please check your request.";
+          console.error("Validation Error:", err.data);
+        } else if (err.status === 404) {
+          errMsg = "GitHub user not found or token missing.";
+        } else if (err.status === 500) {
+          errMsg = "Internal server error. Please try again later.";
+        }
+
+        toast.error(errMsg, { id: "signin" });
+      } finally {
+        if (redirectURL === "null") {
           router.push("/");
         } else {
           router.push(redirectURL);
-        }
-      } catch (error: unknown) {
-        if (error && (error as FetchBaseQueryError).status == 404) {
-          if (redirectURL == "null") {
-            router.push("/");
-          } else {
-            router.push(redirectURL);
-          }
-          toast.error("Error fetching User details please try again", {
-            id: "signin",
-          });
         }
       }
     };
