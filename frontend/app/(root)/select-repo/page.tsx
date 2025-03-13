@@ -17,6 +17,7 @@ import useDebounce from "@/hooks/useDebounce";
 import { Skeleton } from "@/components/ui/skeleton";
 import withAuth from "@/components/hoc/withAuth";
 import { toast } from "sonner";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 const SelectRepo = () => {
   const [search, setSearch] = useState<string>("");
@@ -28,21 +29,20 @@ const SelectRepo = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (isError) {
-      const errorObject = error as any;
-      if (errorObject?.status === 404) {
-        toast.error("User not found");
-      } else if (errorObject?.status === 500) {
-        toast.error(
-          "Server error: Unable to fetch repositories. Please try again later"
-        );
-      } else {
-        toast.error("Failed to fetch repositories");
-      }
+    if (!isError || !error) return;
 
-      console.error("Repository fetch error:", errorObject);
+    const err = error as FetchBaseQueryError;
+    let errMsg = "Failed to fetch repositories.";
+
+    if (err.status === 404) {
+      errMsg = "User not found.";
+    } else if (err.status === 500) {
+      errMsg =
+        "Server error: Unable to fetch repositories. Please try again later.";
     }
-  }, [isError, error, router]);
+
+    toast.error(errMsg);
+  }, [isError, error]);
 
   const handleSelectRepo = (repo: Repository) => {
     if (selectedRepo?.gitURL == repo.gitURL) {
