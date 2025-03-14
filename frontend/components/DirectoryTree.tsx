@@ -12,6 +12,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useGetTreeMutation } from "@/redux/api/userApiSlice";
 import { toast } from "sonner";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 export type TreeNode = {
   path: string;
@@ -42,21 +43,22 @@ export default function DirectoryTree({
   const [getTree, { isLoading, error }] = useGetTreeMutation();
 
   useEffect(() => {
-    if (error) {
-      const errorObject = error as any;
-      setFetchError(true);
-      if (errorObject?.status === 400) {
-        toast.error(`Bad request: Unable to load directory structure`);
-      } else if (errorObject?.status === 404) {
-        toast.error("User not found");
-      } else if (errorObject?.status === 500) {
-        toast.error("Server error: Failed to fetch directory structure");
-      } else {
-        toast.error("Failed to load directory structure");
-      }
+    if (!error) return;
 
-      console.error("Directory tree fetch error:", errorObject);
+    const err = error as FetchBaseQueryError;
+    let errMsg = "Failed to load directory structure.";
+
+    if (err.status === 400) {
+      errMsg = "Bad request: Unable to load directory structure.";
+    } else if (err.status === 404) {
+      errMsg = "User not found.";
+    } else if (err.status === 500) {
+      errMsg = "Server error: Failed to fetch directory structure.";
     }
+
+    setFetchError(true);
+    toast.error(errMsg);
+    console.error("Directory tree fetch error:", err);
   }, [error]);
 
   const handleToggle = async () => {
@@ -68,9 +70,7 @@ export default function DirectoryTree({
           sha: data.sha,
         }).unwrap();
         setChildren(response.tree);
-      } catch (error) {
-        console.error("Failed to fetch directory tree:", error);
-      }
+      } catch {}
     }
     setIsOpen(!isOpen);
   };
