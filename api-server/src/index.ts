@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import { router } from "./src/routes/routes";
-import { initKafkaConsumer } from "./src/config/kafka/client";
+import { router } from "./routes/routes";
+import { initKafkaConsumer } from "./config/kafka/client";
 
 const port = 9000;
 const app = express();
