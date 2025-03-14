@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import prisma from "../../../prisma/db";
+import prisma from "../../utils/db";
 
 export const getProject: RequestHandler = async (req, res) => {
   const projectId = req.params.id;

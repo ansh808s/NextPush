@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import prisma from "../../../prisma/db";
+import prisma from "../../utils/db";
 import { createDeploymentSchema } from "../../validations/app/validatons";
 import { deployTask } from "../../services/AWS/deployTask";
 import type { SupportedFrameworks } from "../../config/constants";

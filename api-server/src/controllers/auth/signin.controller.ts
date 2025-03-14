@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import prisma from "../../../prisma/db";
+import prisma from "../../utils/db";
 import { createUserSchema } from "../../validations/auth/validation";
 import { getAccessToken } from "../../services/github/auth";
 import { getUserDetails } from "../../services/github/resource";

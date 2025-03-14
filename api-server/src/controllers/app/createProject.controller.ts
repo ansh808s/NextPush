@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import prisma from "../../../prisma/db";
+import prisma from "../../utils/db";
 import { createProjectSchema } from "../../validations/app/validatons";
 import { generateSlug } from "random-word-slugs";
 

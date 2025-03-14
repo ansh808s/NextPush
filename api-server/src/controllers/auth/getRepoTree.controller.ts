@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import prisma from "../../../prisma/db";
+import prisma from "../../utils/db";
 import type { GetRepoTreeProps } from "../../types/auth.types";
 import { getRepoTreeSchema } from "../../validations/auth/validation";
 import { getRepoTreeService } from "../../services/github/resource";

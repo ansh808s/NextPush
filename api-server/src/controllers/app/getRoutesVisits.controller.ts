@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import prisma from "../../../prisma/db";
+import prisma from "../../utils/db";
 import { startOfDay, endOfDay } from "date-fns";
 import { fromZonedTime, toZonedTime } from "date-fns-tz";
 
