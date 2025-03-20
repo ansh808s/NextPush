@@ -2,7 +2,7 @@ import { Kafka, type Consumer } from "kafkajs";
 import { client } from "../clickhouse/client";
 import { v4 } from "uuid";
 import type { LogEvent, UserSiteAnalyticsEvent } from "../../types/app.types";
-import prisma from "../../../prisma/db";
+import prisma from "../../utils/db";
 import fs from "fs";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
@@ -20,7 +20,7 @@ class KafkaConsumerManager {
       brokers: process.env.KAFKA_BROKERS!.split(","),
       clientId: "api-server",
       ssl: {
-        ca: [fs.readFileSync(path.join(__dirname, "kafka.pem"), "utf-8")],
+        ca: [Buffer.from(process.env.KAFKA_PEM!, "base64").toString("utf-8")],
       },
       sasl: {
         username: process.env.KAFKA_USER!,
