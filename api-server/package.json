@@ -7,7 +7,6 @@
     "dev": "tsx watch index.ts"
   },
   "devDependencies": {
-    "@types/bun": "latest",
     "tsc-alias": "^1.8.10"
   },
   "peerDependencies": {
@@ -33,6 +32,7 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "^5.0.0",
+    "uuid": "^11.1.0",
     "zod": "^3.24.1"
   }
 }
