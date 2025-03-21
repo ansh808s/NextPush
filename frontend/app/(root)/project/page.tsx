@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -18,20 +18,47 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Globe, Github, Plus, Search, Code, Calendar } from "lucide-react";
+import {
+  Globe,
+  Github,
+  Plus,
+  Search,
+  Code,
+  Calendar,
+  AlertCircle,
+} from "lucide-react";
 import { useGetUserProjectsQuery } from "@/redux/api/appApiSlice";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import withAuth from "@/components/hoc/withAuth";
+import { toast } from "sonner";
+import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 const ProjectsDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [frameworkFilter, setFrameworkFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
-  //   TODO: Loading
-  const { data: projects, isFetching: isProjectsLoading } =
-    useGetUserProjectsQuery();
+  const [hasError, setHasError] = useState(false);
+
+  const { data: projects, isFetching, error } = useGetUserProjectsQuery();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!error) return;
+
+    const err = error as FetchBaseQueryError;
+    setHasError(true);
+
+    let errMsg = "Something went wrong while fetching projects.";
+
+    if (err.status === 400) {
+      errMsg = "Bad request: User ID is missing or invalid.";
+    } else if (err.status === 500) {
+      errMsg = "Server error: Could not retrieve projects.";
+    }
+
+    toast.error(errMsg);
+  }, [error]);
 
   const filteredProjects = projects?.filter((project) => {
     const matchesSearch = project.name
@@ -113,93 +140,109 @@ const ProjectsDashboard = () => {
         </div>
       </div>
 
+      {hasError && (
+        <div className="flex items-center text-rose-500 text-sm mb-4">
+          <AlertCircle className="h-4 w-4 mr-2" />
+          Failed to load projects. Please try again later.
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProjects?.map((project) => (
-          <div
-            onClick={() => handleDashboardRedirect(project.id)}
-            key={project.id}
-          >
-            <Card className="h-full transition-all duration-300 hover:shadow-lg  border-gray-200 dark:border-gray-700">
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <div>
+        {isFetching ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i} className="animate-pulse h-[200px] p-4" />
+          ))
+        ) : filteredProjects?.length === 0 ? (
+          <div className="col-span-full text-center text-gray-500 dark:text-gray-400">
+            No projects found.
+          </div>
+        ) : (
+          filteredProjects?.map((project) => (
+            <div
+              onClick={() => handleDashboardRedirect(project.id)}
+              key={project.id}
+            >
+              <Card className="h-full transition-all duration-300 hover:shadow-lg border-gray-200 dark:border-gray-700">
+                <CardHeader className="pb-2">
+                  <div className="flex justify-between items-start">
                     <CardTitle className="text-xl">{project.name}</CardTitle>
-                  </div>
-                  <div className="flex space-x-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      asChild
-                      className="text-rose-500 hover:text-rose-600"
-                    >
-                      <a
-                        href={`http://localhost:9000/${project.slug}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <Globe className="h-5 w-5" />
-                      </a>
-                    </Button>
-                    {project.gitURL && (
+                    <div className="flex space-x-1">
                       <Button
                         variant="ghost"
                         size="icon"
                         asChild
-                        className="text-gray-500 hover:text-gray-600"
+                        className="text-rose-500 hover:text-rose-600"
                       >
                         <a
-                          href={project.gitURL}
+                          href={`http://localhost:9000/${project.slug}`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <Github className="h-5 w-5" />
+                          <Globe className="h-5 w-5" />
                         </a>
                       </Button>
+                      {project.gitURL && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          asChild
+                          className="text-gray-500 hover:text-gray-600"
+                        >
+                          <a
+                            href={project.gitURL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Github className="h-5 w-5" />
+                          </a>
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2 mb-4 capitalize">
+                    <Badge
+                      className="border-rose-500 font-light"
+                      variant={"outline"}
+                    >
+                      {project.deployment[0].status.toLowerCase()}
+                    </Badge>
+                    <Badge
+                      variant="outline"
+                      className="border-rose-500 capitalize font-light"
+                    >
+                      <Code className="mr-1 h-3 w-3" /> {project.framework}
+                    </Badge>
+                  </div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    {project.createdAt && (
+                      <div className="flex items-center">
+                        <Calendar className="mr-1 h-4 w-4" />
+                        <span>
+                          Created:{" "}
+                          {moment(project.createdAt).format("Do MMMM YYYY")}
+                        </span>
+                      </div>
                     )}
                   </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2 mb-4 capitalize">
-                  <Badge
-                    className="border-rose-500 font-light"
-                    variant={"outline"}
-                  >
-                    {project.deployment[0].status.toLowerCase()}
-                  </Badge>
-                  <Badge
+                </CardContent>
+                <CardFooter>
+                  <Button
                     variant="outline"
-                    className="border-rose-500 capitalize font-light"
+                    onClick={() => handleDashboardRedirect(project.id)}
+                    className="w-full border-rose-500 text-rose-500 dark:bg-neutral-900 hover:bg-rose-50 dark:hover:bg-rose-900"
                   >
-                    <Code className="mr-1 h-3 w-3" /> {project.framework}
-                  </Badge>
-                </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                  {project.createdAt && (
-                    <div className="flex items-center">
-                      <Calendar className="mr-1 h-4 w-4" />
-                      <span>
-                        Created:{" "}
-                        {moment(project.createdAt).format("Do MMMM YYYY")}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => handleDashboardRedirect(project.id)}
-                  className="w-full border-rose-500 text-rose-500 dark:bg-neutral-900 hover:bg-rose-50 dark:hover:bg-rose-900"
-                >
-                  View Dashboard
-                </Button>
-              </CardFooter>
-            </Card>
-          </div>
-        ))}
+                    View Dashboard
+                  </Button>
+                </CardFooter>
+              </Card>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
 };
+
 export default withAuth(ProjectsDashboard);
