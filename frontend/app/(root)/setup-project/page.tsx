@@ -53,6 +53,7 @@ import { LogEntry } from "@/types/app/types";
 import BuildLogs from "@/components/BuildLogs";
 import { toast } from "sonner";
 import withAuth from "@/components/hoc/withAuth";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
 const SetupProject = () => {
   const params = useSearchParams();
@@ -116,21 +117,20 @@ const SetupProject = () => {
       }).unwrap();
       toast.info("Deployment Started", { id: "deploy" });
       setDeploymentId(deployment.deploymentId);
-    } catch (error: any) {
-      if (error?.status === 400) {
-        toast.error("Please check your inputs");
-      } else if (error?.status === 403) {
-        toast.error("You can't create more than one project in free account");
-      } else if (error?.status === 500) {
-        toast.error("Server error: Please try again later");
-      } else if (error?.status === 409) {
-        toast.error("Project name must be unique");
-      } else {
-        toast.error("Failed creating project");
-      }
-      toast.error("Failed creating project", { id: "project" });
+    } catch (error: unknown) {
+      const err = error as FetchBaseQueryError;
+      let errMsg = "Something went wrong while fetching projects.";
 
-      console.log(error);
+      if (err.status === 400) {
+        errMsg = "Please check your inputs";
+      } else if (err.status === 403) {
+        errMsg = "You can't create more than one project in free account";
+      } else if (err.status === 500) {
+        errMsg = "Server error: Please try again later";
+      } else if (err.status === 409) {
+        toast.error("Project name must be unique");
+      }
+      toast.error(errMsg, { id: "project" });
     }
   };
   // TODO:Improve this code
@@ -143,17 +143,18 @@ const SetupProject = () => {
       try {
         const res = await getTree({ repo, sha: "main" }).unwrap();
         setChildren(res.tree);
-      } catch (error) {
-        const errorObject = error as any;
-        if (errorObject?.status === 400) {
-          toast.error(`Bad request: Unable to load directory structure`);
-        } else if (errorObject?.status === 404) {
-          toast.error("User not found");
-        } else if (errorObject?.status === 500) {
-          toast.error("Server error: Failed to fetch directory structure");
-        } else {
-          toast.error("Failed to load directory structure");
+      } catch (error: unknown) {
+        const err = error as FetchBaseQueryError;
+        let errMsg = "Something went wrong while fetching projects.";
+
+        if (err.status === 400) {
+          errMsg = `Bad request: Unable to load directory structure`;
+        } else if (err?.status === 404) {
+          errMsg = "User not found";
+        } else if (err.status === 500) {
+          errMsg = "Server error: Failed to fetch directory structure";
         }
+        toast.error(errMsg);
       }
     };
     tree();
@@ -397,6 +398,7 @@ const SetupProject = () => {
           </Form>
         </CardContent>
       </Card>
+      <div className="mt-8"></div>
       <BuildLogs
         isDeployed={!!deploymentId}
         isLoadingLogs={isLoadingLogs}
