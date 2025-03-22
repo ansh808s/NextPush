@@ -26,6 +26,8 @@ import DashBoardAnalytics from "@/components/DashBoardAnalytics";
 import DashboardSettings from "@/components/DashboardSettings";
 import withAuth from "@/components/hoc/withAuth";
 import { useRouter } from "next/navigation";
+import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import { toast } from "sonner";
 
 const DetailItem = ({ label, value }: { label: string; value: ReactNode }) => (
   <div className="mb-4">
@@ -37,19 +39,33 @@ const DetailItem = ({ label, value }: { label: string; value: ReactNode }) => (
 const Dashboard = () => {
   const params = useParams();
   const id = params.id! as string;
-  const { data: projectData, isFetching: isProjectInfoLoading } =
-    useGetProjectInfoQuery(id as string);
+  const {
+    data: projectData,
+    isFetching: isProjectInfoLoading,
+    error: projectError,
+  } = useGetProjectInfoQuery(id as string);
   const [deploymentId, setDeploymentId] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
+    if (projectError) {
+      const error = projectError as FetchBaseQueryError;
+      let errMsg = "Something went wrong while fetching projects.";
+      if (error.status == 400) {
+        errMsg = "Please provide a project Id";
+      } else if (error.status == 404) {
+        errMsg = "Project not found";
+      }
+      toast.error(errMsg);
+      router.push("/project");
+    }
     if (!projectData) {
       return;
     }
     setDeploymentId(
       projectData.Deployment[projectData.Deployment.length - 1].id
     );
-  }, [projectData]);
+  }, [projectData, projectError]);
 
   const { data: logData, isFetching: isLoadingLogs } =
     useGetDeploymentLogsQuery(deploymentId, {
@@ -235,7 +251,14 @@ const Dashboard = () => {
                     Recent Deployment Logs
                   </h3>
                   {!logData || isLoadingLogs ? (
-                    <></>
+                    <>
+                      <div
+                        className="mt-20
+                       flex justify-center"
+                      >
+                        <p className="">Loading...</p>
+                      </div>
+                    </>
                   ) : (
                     <BuildLogs
                       isLoadingLogs={isLoadingLogs}
