@@ -5,7 +5,7 @@ import { useCreateUserMutation } from "@/redux/api/userApiSlice";
 import { useDispatch } from "react-redux";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { setUser } from "@/redux/slices/userSlice";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 
@@ -13,11 +13,12 @@ export default function GithubAuthCallback() {
   const [createUser, { isLoading }] = useCreateUserMutation();
   const dispatch = useDispatch();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const code = searchParams.get("code");
-  const error = searchParams.get("error");
-  const redirectURL = decodeURIComponent(searchParams.get("state")!);
+
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const error = params.get("error");
+    const redirectURL = decodeURIComponent(params.get("state")!);
     const fetchUserDetails = async () => {
       if (!code || Array.isArray(code) || error) {
         toast.error("Access denied");
