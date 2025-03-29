@@ -9,6 +9,11 @@ app.use(cors({ origin: process.env.CLIENT_URL }));
 app.use(express.json());
 app.use("/api", router);
 
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+  return;
+});
+
 const startKafkaConsumer = async () => {
   try {
     const consumerManager = await initKafkaConsumer();
