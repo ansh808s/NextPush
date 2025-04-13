@@ -18,9 +18,11 @@ export const getSiteVisits: RequestHandler = async (req, res) => {
     });
     return;
   }
+
   const timezoneArg = timezone as string;
   const utcDate = new Date();
   const clientDate = toZonedTime(utcDate, timezoneArg);
+
   try {
     if (type == "today") {
       const clientDayStart = startOfDay(clientDate);
@@ -66,12 +68,14 @@ export const getSiteVisits: RequestHandler = async (req, res) => {
           count: 0,
         };
       });
+
       const visitCounts: Record<string, number> = {};
       rawVisits.forEach((visit) => {
         const clientTimezoneDate = toZonedTime(visit.createdAt, timezoneArg);
         const dateKey = format(clientTimezoneDate, "yyyy-MM-dd");
         visitCounts[dateKey] = (visitCounts[dateKey] || 0) + 1;
       });
+
       Object.entries(visitCounts).forEach(([dateStr, count]) => {
         const dayIndex = allDays.findIndex((day) => day.date === dateStr);
         if (dayIndex !== -1) {
@@ -79,6 +83,7 @@ export const getSiteVisits: RequestHandler = async (req, res) => {
         } else {
         }
       });
+
       res.status(200).json({
         visits: allDays.map((day) => ({
           date: day.dayName,

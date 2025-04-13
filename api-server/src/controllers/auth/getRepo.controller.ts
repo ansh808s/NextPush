@@ -30,7 +30,6 @@ export const getRepo: RequestHandler = async (req, res) => {
         user: user.username,
       };
       const repos = await getRepoDetailsUsingQuery(getRepoDetalsProps);
-      console.log(repos);
       res.status(200).json({ repos: repos });
       return;
     } else {
