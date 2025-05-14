@@ -1,12 +1,6 @@
 import { Kafka, type Producer } from "kafkajs";
 import { v4 as uuidv4 } from "uuid";
 import type { UserSiteAnalyticsEvent } from "../../types/analytics/types";
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
-import fs from "fs";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 class KafkaProducerManager {
   private static instance: KafkaProducerManager;
@@ -32,7 +26,7 @@ class KafkaProducerManager {
         maxRetryTime: 30000,
       },
       ssl: {
-        ca: [fs.readFileSync(path.join(__dirname, "kafka.pem"), "utf-8")],
+        ca: [Buffer.from(process.env.KAFKA_PEM!, "base64").toString("utf-8")],
       },
       sasl: {
         username: process.env.KAFKA_USER!,

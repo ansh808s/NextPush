@@ -5,7 +5,7 @@ import { initKafkaConsumer } from "./config/kafka/client";
 
 const port = 9000;
 const app = express();
-app.use(cors({ origin: process.env.CLIENT_URL }));
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use("/api", router);
 

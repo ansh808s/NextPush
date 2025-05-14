@@ -2,8 +2,12 @@
   "name": "reverse-proxy-server",
   "module": "index.ts",
   "type": "module",
+  "scripts": {
+    "build": "tsc && tsc-alias",
+    "dev": "tsx watch src/index.ts"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "tsc-alias": "^1.8.10"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
@@ -15,6 +19,10 @@
     "http-proxy-middleware": "^3.0.3",
     "kafkajs": "^2.2.4",
     "node-fetch": "^3.3.2",
-    "pg": "^8.15.6"
+    "pg": "^8.15.6",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.0.0",
+    "uuid": "^11.1.0"
   }
 }
