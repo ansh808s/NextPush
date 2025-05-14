@@ -122,12 +122,12 @@ const Dashboard = () => {
                           label="Deployed Link"
                           value={
                             <Link
-                              href={`http://${projectData.name}-${projectData.subDomain}.localhost:8000`}
+                              href={`http://${projectData.name}-${projectData.subDomain}.ansharora.me`}
                               className="text-rose-500 hover:underline flex items-center"
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              {`http://${projectData.name}-${projectData.subDomain}.localhost:8000`}{" "}
+                              {`http://${projectData.name}-${projectData.subDomain}.ansharora.me`}{" "}
                               <ArrowUpRight className="ml-1 h-4 w-4" />
                             </Link>
                           }
@@ -205,7 +205,7 @@ const Dashboard = () => {
                       </h3>
                       <div className="grid grid-cols-2 gap-4">
                         <Link
-                          href={`http://${projectData.name}-${projectData.subDomain}.localhost:8000`}
+                          href={`http://${projectData.name}-${projectData.subDomain}.ansharora.me`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >

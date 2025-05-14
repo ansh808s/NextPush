@@ -15,6 +15,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = 8000;
 const S3_URI = process.env.S3_URI;
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
 
 async function logAnalytics(req: express.Request) {
   if (!shouldTrackPath(req.path)) {
