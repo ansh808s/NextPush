@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Loader, Plus, X, Edit2 } from "lucide-react";
+import { Loader, Edit2 } from "lucide-react";
 import { SupportedFrameworks } from "@/config/constant";
 import {
   SetupProjectFormData,
@@ -93,11 +93,6 @@ const SetupProject = () => {
     formState: { isSubmitting },
     setValue,
   } = form;
-
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "envVars",
-  });
 
   const handleSelectDirectory = (path: string) => {
     setSelectedRootDir(path);
@@ -329,56 +324,6 @@ const SetupProject = () => {
                   </FormItem>
                 )}
               />
-
-              <div>
-                <Label className="">Environment Variables</Label>
-                <div className="flex flex-col gap-y-3 mt-4">
-                  {fields.map((field, index) => (
-                    <div key={field.id} className="flex gap-2">
-                      <FormField
-                        control={control}
-                        name={`envVars.${index}.key`}
-                        render={({ field }) => (
-                          <FormItem className="w-[47%]">
-                            <FormControl>
-                              <Input placeholder="Key" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={control}
-                        name={`envVars.${index}.value`}
-                        render={({ field }) => (
-                          <FormItem className="w-[47%]">
-                            <FormControl>
-                              <Input placeholder="Value" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => remove(index)}
-                        className="text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500 dark:bg-neutral-900"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => append({ key: "", value: "" })}
-                  className="text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-500 dark:bg-neutral-900 mt-4 mb-2"
-                >
-                  <Plus className="h-4 w-4 mr-2" /> Add Environment Variable
-                </Button>
-              </div>
 
               <Button
                 type="submit"
